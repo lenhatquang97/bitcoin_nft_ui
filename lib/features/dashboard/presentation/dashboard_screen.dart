@@ -1,6 +1,7 @@
-import 'package:bitcoin_nft_ui/features/off_chain/application/offchain_screen.dart';
-import 'package:bitcoin_nft_ui/features/on_chain/application/on_chain_screen.dart';
-import 'package:bitcoin_nft_ui/features/transactions/application/transaction_screen.dart';
+import 'package:bitcoin_nft_ui/features/off_chain/presentation/offchain_screen.dart';
+import 'package:bitcoin_nft_ui/features/on_chain/presentation/on_chain_screen.dart';
+import 'package:bitcoin_nft_ui/features/settings/settings_screen.dart';
+import 'package:bitcoin_nft_ui/features/transactions/presentation/transaction_screen.dart';
 import 'package:flutter/material.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -9,7 +10,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
             bottom: const TabBar(
@@ -38,6 +39,14 @@ class DashboardScreen extends StatelessWidget {
                     Text('Transactions', style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 )),
+                Tab(icon: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.settings),
+                    SizedBox(width: 2),
+                    Text('Settings', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                )),
               ],
             ),
             title: const Text('NFT Wallet'),
@@ -46,7 +55,8 @@ class DashboardScreen extends StatelessWidget {
             children: [
               OnChainScreen(),
               OffChainScreen(),
-              TransactionScreen()
+              TransactionScreen(),
+              SettingsScreen()
             ],
           ),
         ),

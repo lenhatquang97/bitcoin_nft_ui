@@ -1,4 +1,4 @@
-import 'package:bitcoin_nft_ui/features/dashboard/application/dashboard_screen.dart';
+import 'package:bitcoin_nft_ui/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

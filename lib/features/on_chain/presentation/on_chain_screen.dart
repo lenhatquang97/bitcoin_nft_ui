@@ -1,6 +1,6 @@
-import 'package:bitcoin_nft_ui/features/on_chain/application/create_inscription_screen.dart';
-import 'package:bitcoin_nft_ui/features/on_chain/application/see_your_nft_screen.dart';
-import 'package:bitcoin_nft_ui/features/on_chain/application/send_inscription.dart';
+import 'package:bitcoin_nft_ui/features/on_chain/presentation/create_inscription_screen.dart';
+import 'package:bitcoin_nft_ui/features/on_chain/presentation/see_your_nft_screen.dart';
+import 'package:bitcoin_nft_ui/features/on_chain/presentation/send_inscription.dart';
 import 'package:flutter/material.dart';
 
 class OnChainScreen extends StatelessWidget {

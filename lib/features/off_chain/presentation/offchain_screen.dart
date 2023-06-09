@@ -1,5 +1,5 @@
-import 'package:bitcoin_nft_ui/features/off_chain/application/see_offchain_nft_screen.dart';
-import 'package:bitcoin_nft_ui/features/off_chain/application/send_and_export_proof_screen.dart';
+import 'package:bitcoin_nft_ui/features/off_chain/presentation/see_offchain_nft_screen.dart';
+import 'package:bitcoin_nft_ui/features/off_chain/presentation/send_and_export_proof_screen.dart';
 import 'package:flutter/material.dart';
 
 class OffChainScreen extends StatelessWidget {
