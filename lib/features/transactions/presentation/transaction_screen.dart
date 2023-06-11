@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:bitcoin_nft_ui/features/transactions/data/transaction_api.dart';
+import 'package:bitcoin_nft_ui/features/transactions/domain/transaction_domain.dart';
 import 'package:flutter/material.dart';
 
 class TransactionScreen extends StatefulWidget {
@@ -12,27 +16,13 @@ const searchText = "Search";
 
 class _TransactionScreenState extends State<TransactionScreen> {
   var transactionId = "";
-  final Map<String, String> transactionDetails = {
-    "Transaction ID": "0x1234567890",
-    "Transaction type": "On-chain",
-    "Transaction status": "Success",
-    "Transaction time": "2021-10-10 10:10:10",
-    "Transaction fee": "0.0001 ETH",
-    "Transaction hash": "0x1234567890",
-    "Block number": "1234567890",
-    "Block hash": "0x1234567890",
-    "From": "0x1234567890",
-    "To": "0x1234567890",
-    "Value": "0.0001 ETH",
-    "Gas used by transaction": "1234567890",
-    "Gas price": "1234567890"
-  };
+  var searchedTx = GetTransactionResponse.init();
   //Widget that uses the transactionDetails map with line spacing
-  Widget transactionDetailsWidget() {
+  Widget transactionDetailsWidget(Map<String, String> mp) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: transactionDetails.entries
+      children: mp.entries
           .map((entry) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -40,9 +30,11 @@ class _TransactionScreenState extends State<TransactionScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        entry.key,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      Expanded(
+                        child: Text(
+                          entry.key,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                       Text(
                         entry.value,
@@ -81,12 +73,36 @@ class _TransactionScreenState extends State<TransactionScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                   ),
-                  onPressed: () {},
+                  onPressed: () async{
+                    final res = await TransactionDomain.getTransactionDomain(transactionId);
+                    setState(() {
+                      searchedTx = res;
+                    });
+                  },
                   child: const Text(searchText),
                 ),
               ],
             ),
-            transactionDetailsWidget()
+            transactionDetailsWidget(searchedTx.outputToMap()),
+            ...searchedTx.vin.asMap().map((i, e) => MapEntry(i, Column(
+              children: [
+                const SizedBox(height: 20,),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Text("InputIndex: $i", style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 16))),
+                transactionDetailsWidget(e.outputToMap())
+              ],
+            ))).values.toList(),
+            const SizedBox(height: 20,),
+            ...searchedTx.vout.asMap().map((i, e) => MapEntry(i, Column(
+              children: [
+                const SizedBox(height: 20,),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Text("OutputIndex: $i", style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 16))),
+                transactionDetailsWidget(e.outputToMap())
+              ],
+            ))).values.toList(),
           ],
         ),
       ),
