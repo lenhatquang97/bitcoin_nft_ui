@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bitcoin_nft_ui/features/transactions/data/transaction_api.dart';
 import 'package:bitcoin_nft_ui/features/transactions/domain/transaction_domain.dart';
 import 'package:flutter/material.dart';

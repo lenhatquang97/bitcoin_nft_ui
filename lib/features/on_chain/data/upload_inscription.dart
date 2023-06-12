@@ -63,7 +63,6 @@ class UploadInscriptionResponse {
       'fee': fee
     });
   }
-
 }
 
 Future<UploadInscriptionResponse> uploadInscription(UploadInscriptionRequest req) async{

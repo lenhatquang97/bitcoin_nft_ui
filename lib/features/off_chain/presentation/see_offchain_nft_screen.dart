@@ -1,4 +1,6 @@
+import 'package:bitcoin_nft_ui/features/off_chain/domain/import_proof_domain.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class SeeOffChainNftScreen extends StatefulWidget {
   const SeeOffChainNftScreen({super.key});
@@ -15,7 +17,7 @@ const memoText = "memo";
 const importText = "Import";
 
 class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
-  String importedId = "";
+  TextEditingController importedIdController = TextEditingController(text: const Uuid().v1());
   String importedUrl = "";
   String importedMemo = "";
   final List<String> availableNfts = [
@@ -38,12 +40,10 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
             ),
             const SizedBox(height: 20),
             TextFormField(
+              controller: importedIdController,
               decoration: const InputDecoration(
                 hintText: idText,
               ),
-              onChanged: (value) => setState(() {
-                importedId = value;
-              }),
             ),
             const SizedBox(height: 20),
             TextFormField(
@@ -69,7 +69,21 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: () {},
+              onPressed: () async{
+                final res = await ImportProofDomain.importProofDomain(importedIdController.value.text, importedUrl, importedMemo);
+                if (res == 200) {
+                    var snackBar = const SnackBar(content: Text('Success'));
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                } else {
+                    var snackBar = SnackBar(content: Text('Failure with error code $res'));
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+                setState(() {
+                  importedIdController.text = const Uuid().v1();
+                });
+              },
               child: const Text(importText),
             ),
             const SizedBox(height: 20),

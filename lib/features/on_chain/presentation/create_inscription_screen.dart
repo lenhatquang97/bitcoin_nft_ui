@@ -122,17 +122,6 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                     voidCallback: () => setState(() {
                           feeChoice = 0;
                         })),
-                FeeBlockWidget(
-                  feeTitle: "Low fee (2 blocks)",
-                  feeValue: feeChoices[1],
-                  transactionSize: 100,
-                  satoshiReceive: satoshiVal,
-                  transactionFeeChoice: feeChoice,
-                  feeNumber: 1,
-                  voidCallback: () => setState(() {
-                    feeChoice = 1;
-                  }),
-                ),
               ],
             ),
             const SizedBox(
@@ -151,12 +140,8 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                   final highFee =
                       await UploadInscriptionDomain.estimateFeeDomain(
                           1, satoshiVal, hexBinaryFile);
-                  final lowFee =
-                      await UploadInscriptionDomain.estimateFeeDomain(
-                          2, satoshiVal, hexBinaryFile);
                   setState(() {
                     feeChoices[0] = highFee;
-                    feeChoices[1] = lowFee;
                   });
                 }
               },

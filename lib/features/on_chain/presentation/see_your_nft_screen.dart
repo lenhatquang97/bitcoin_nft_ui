@@ -1,9 +1,6 @@
-import 'dart:developer';
-
+import 'package:bitcoin_nft_ui/features/on_chain/data/nft_getter.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/domain/nft_getter_domain.dart';
 import 'package:flutter/material.dart';
-
-const refreshText = "Refresh";
 class SeeYourNftScreen extends StatefulWidget {
   const SeeYourNftScreen({super.key});
 
@@ -12,18 +9,10 @@ class SeeYourNftScreen extends StatefulWidget {
 }
 
 const seeYourNftText = "See your NFTs";
+const refreshText = "Refresh";
 
 class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
-  final List<String> availableNfts = [
-    "Board Ape 1",
-    "Board Ape 2",
-    "Board Ape 3",
-    "Board Ape 4",
-    "Board Ape 1",
-    "Board Ape 2",
-    "Board Ape 3",
-    "Board Ape 4"
-  ];
+  final List<NftStructure> availableNfts = [];
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,9 +36,12 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
               ),
               onPressed: () async {
                 final value = await NftGetterDomain.nftGetterDomain("n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v");
-                print(value[0].hexData);
-                print(value[0].mimeType);
-                print(value[0].txId);
+                setState(() {
+                  availableNfts.clear();
+                  for(int i=0;i<20;i++) {
+                    availableNfts.addAll(value);
+                  }
+                });
               },
               child: const Text(refreshText),
             )
@@ -62,19 +54,25 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
   //Generate widget that displays grid of NFTs but no line space
   Widget buildGrid() => GridView(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
+          crossAxisCount: 3,
         ),
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         children: availableNfts.map(buildFile).toList(),
       );
 
-  Widget buildFile(String nftName) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
+  Widget buildFile(NftStructure structure) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.text_snippet, size: 40, color: Colors.red),
-            Text(nftName)
+            const Align(
+              alignment: Alignment.center,
+              child: Icon(Icons.text_snippet, size: 120, color: Colors.red)),
+            const SizedBox(height: 20),
+            Flexible(child: Text(structure.txId, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+            const SizedBox(height: 20),
+            Text(structure.mimeType)
           ],
         ),
       );

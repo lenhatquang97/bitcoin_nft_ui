@@ -1,3 +1,5 @@
+import 'package:bitcoin_nft_ui/features/off_chain/data/export_proof_api.dart';
+import 'package:bitcoin_nft_ui/features/off_chain/domain/import_proof_domain.dart';
 import 'package:flutter/material.dart';
 
 class SendAndExportProofScreen extends StatefulWidget {
@@ -14,6 +16,8 @@ const receiptAddressTextHint = "Receipt address";
 
 class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
     String receiverAddress = "";
+    String urlToExport = "";
+    ExportProofResponse showedRes = const ExportProofResponse(id: "", url: "", memo: "");
 
   final List<String> availableNfts = ["Board Ape 1", "Board Ape 2", "Board Ape 3"];
   @override
@@ -55,15 +59,47 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
               onPressed: () {},
               child: const Text("Submit"),
             ),
+            const SizedBox(height: 20),
+            const Text(
+              "Export proof",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20,),
+            TextFormField(
+              decoration: const InputDecoration(
+                hintText: "URL to export",
+              ),
+              onChanged: (value) => setState(() {
+                urlToExport = value;
+              }),
+            ),
             const SizedBox(height: 20,),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: () {},
+              onPressed: () async {
+                final res = await ImportProofDomain.exportProofDomain(urlToExport);
+                if(res.id.isNotEmpty) {
+                    setState(() {
+                      showedRes = res;
+                    });
+                }
+              },
               child: const Text("Export proof"),
-            )
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Output",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            showedRes.id.isNotEmpty ? Text(showedRes.id) : const Text(""),
+            const SizedBox(height: 20),
+            showedRes.url.isNotEmpty ? Text(showedRes.url) : const Text(""),
+            const SizedBox(height: 20),
+            showedRes.memo.isNotEmpty ? Text(showedRes.memo) : const Text(""),
           ],
         ),
       ),
