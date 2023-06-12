@@ -12,7 +12,9 @@ class UploadInscriptionDomain {
         amount: satoshiVal,
         isRef: false,
         urls: [binaryHex],
-        numBlocks: numBlocks);
+        numBlocks: numBlocks,
+        isSendNft: true
+        );
     try {
       final res = await estimateFee(req);
       return res;
@@ -28,14 +30,16 @@ class UploadInscriptionDomain {
     return hexStr;
   }
 
-  static Future<UploadInscriptionResponse> uploadInscriptionDomain(int numBlocks, int satoshiVal, String binaryHex) async {
+  static Future<UploadInscriptionResponse> uploadInscriptionDomain(int numBlocks, int satoshiVal, String filePath) async {
     final req = UploadInscriptionRequest(
         address: "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v",
         passphrase: "12345",
         amount: satoshiVal,
         isRef: false,
-        urls: [binaryHex],
-        numBlocks: numBlocks);
+        urls: [filePath],
+        numBlocks: numBlocks,
+        isSendNft: true
+        );
     try {
       final res = await uploadInscription(req);
       return res;

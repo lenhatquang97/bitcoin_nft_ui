@@ -1,5 +1,9 @@
+import 'dart:developer';
+
+import 'package:bitcoin_nft_ui/features/on_chain/domain/nft_getter_domain.dart';
 import 'package:flutter/material.dart';
 
+const refreshText = "Refresh";
 class SeeYourNftScreen extends StatefulWidget {
   const SeeYourNftScreen({super.key});
 
@@ -34,7 +38,21 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            buildGrid()
+            buildGrid(),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(60),
+              ),
+              onPressed: () async {
+                final value = await NftGetterDomain.nftGetterDomain("n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v");
+                print(value[0].hexData);
+                print(value[0].mimeType);
+                print(value[0].txId);
+              },
+              child: const Text(refreshText),
+            )
           ],
         ),
       ),

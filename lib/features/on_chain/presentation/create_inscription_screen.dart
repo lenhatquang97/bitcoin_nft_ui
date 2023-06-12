@@ -171,12 +171,9 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                 minimumSize: const Size.fromHeight(60),
               ),
               onPressed: () async {
-                final hexBinaryFile =
-                    await UploadInscriptionDomain.readBinaryFileDomain(
-                        files[0].path);
                 final res =
                     await UploadInscriptionDomain.uploadInscriptionDomain(
-                        feeChoice + 1, satoshiVal, hexBinaryFile);
+                        feeChoice + 1, satoshiVal, files[0].path);
                 if (res.fee != -1) {
                   // ignore: use_build_context_synchronously
                   showSuccessfulDialogAboutCreatingInscription(res, context);
