@@ -1,5 +1,6 @@
 import 'package:bitcoin_nft_ui/features/off_chain/data/export_proof_api.dart';
 import 'package:bitcoin_nft_ui/features/off_chain/data/import_proof_api.dart';
+import 'package:bitcoin_nft_ui/features/off_chain/data/offchain_nft_api.dart';
 
 class ImportProofDomain {
   static Future<int> importProofDomain(String id, String url, String memo) async{
@@ -14,6 +15,15 @@ class ImportProofDomain {
       return res;
     } catch (e) {
       return const ExportProofResponse(id: "", url: "", memo: "");
+    }
+  }
+
+  static Future<OffChainNftResponse> viewOffChainNfts() async{
+    try {
+      final res = await getOffChainNfts();
+      return res;
+    } catch (e) {
+      return const OffChainNftResponse(data: []);
     }
   }
 }

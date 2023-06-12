@@ -1,3 +1,4 @@
+import 'package:bitcoin_nft_ui/features/off_chain/data/offchain_nft_api.dart';
 import 'package:bitcoin_nft_ui/features/off_chain/domain/import_proof_domain.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
@@ -20,11 +21,7 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
   TextEditingController importedIdController = TextEditingController(text: const Uuid().v1());
   String importedUrl = "";
   String importedMemo = "";
-  final List<String> availableNfts = [
-    "Board Ape 1",
-    "Board Ape 2",
-    "Board Ape 3"
-  ];
+  final List<OffChainNftStructure> availableNfts = [];
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -87,13 +84,30 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
               child: const Text(importText),
             ),
             const SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(60),
+              ),
+              onPressed: () async{
+                final res = await ImportProofDomain.viewOffChainNfts();
+                if(res.data.isNotEmpty){
+                  setState(() {
+                    availableNfts.clear();
+                    availableNfts.addAll(res.data);
+                  });
+                }
+              },
+              child: const Text("Refresh"),
+            ),
+            const SizedBox(height: 20),
             const Text(
               seeOffChainNftText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             listAvailableNFTs()
-          ],
+          ]
         ),
       ),
     );
@@ -104,12 +118,12 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
         children: availableNfts.map(buildFile).toList(),
       ));
 
-  Widget buildFile(String nftName) => Padding(
+  Widget buildFile(OffChainNftStructure res) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           children: [
             const Icon(Icons.text_snippet, size: 40, color: Colors.red),
-            Text(nftName)
+            Text(res.id)
           ],
         ),
       );
