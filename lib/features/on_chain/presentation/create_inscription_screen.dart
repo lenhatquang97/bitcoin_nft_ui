@@ -29,9 +29,38 @@ class CreateInscriptionScreen extends StatefulWidget {
 class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
   //Note: This list is one value
   final List<XFile> files = [];
-  final List<int> feeChoices = [0, 0];
+  int feeValue = 0;
   int satoshiVal = 0;
   int feeChoice = 0;
+
+  /* 
+    UI Logic function with onA, onB, onC
+  */
+  void onEstimateFee() async {
+    if (files.isNotEmpty) {
+      const address = "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v";
+      const passphrase = "12345";
+      final hexBinaryFile =
+          await UploadInscriptionDomain.readBinaryFileDomain(files[0].path);
+      final highFee = await UploadInscriptionDomain.estimateFeeDomain(
+          address, passphrase, 1, satoshiVal, hexBinaryFile);
+      setState(() {
+        feeValue = highFee;
+      });
+    }
+  }
+
+  void onSubmit() async {
+    final res = await UploadInscriptionDomain.uploadInscriptionDomain(
+        feeChoice + 1, satoshiVal, files[0].path);
+    if (res.fee != -1) {
+      // ignore: use_build_context_synchronously
+      showSuccessfulDialogAboutCreatingInscription(res, context);
+    } else {
+      // ignore: use_build_context_synchronously
+      showFailedDialogAboutCreatingInscription(res, context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +71,7 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            //STEP 1
             const Text(
               uploadInscriptionText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -86,6 +116,8 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
             const SizedBox(
               height: 20,
             ),
+
+            //STEP 2
             const Text(
               satoshiValue,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -103,6 +135,8 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
               }),
             ),
             const SizedBox(height: 20),
+
+            //STEP 3
             const Text(
               transactionFeeText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -112,15 +146,7 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 FeeBlockWidget(
-                    feeTitle: "High fee (1 blocks)",
-                    feeValue: feeChoices[0],
-                    transactionSize: 100,
-                    satoshiReceive: satoshiVal,
-                    transactionFeeChoice: feeChoice,
-                    feeNumber: 0,
-                    voidCallback: () => setState(() {
-                          feeChoice = 0;
-                        })),
+                    feeValue: feeValue, satoshiReceive: satoshiVal),
               ],
             ),
             const SizedBox(
@@ -131,43 +157,20 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: () async {
-                if (files.isNotEmpty) {
-                  const address = "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v";
-                  const passphrase = "12345";
-                  final hexBinaryFile =
-                      await UploadInscriptionDomain.readBinaryFileDomain(
-                          files[0].path);
-                  final highFee =
-                      await UploadInscriptionDomain.estimateFeeDomain(
-                          address, passphrase, 1, satoshiVal, hexBinaryFile);
-                  setState(() {
-                    feeChoices[0] = highFee;
-                  });
-                }
-              },
+              onPressed: onEstimateFee,
               child: const Text(estimateFeeText),
             ),
             const SizedBox(
               height: 20,
             ),
+
+            //STEP 4
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: () async {
-                final res =
-                    await UploadInscriptionDomain.uploadInscriptionDomain(
-                        feeChoice + 1, satoshiVal, files[0].path);
-                if (res.fee != -1) {
-                  // ignore: use_build_context_synchronously
-                  showSuccessfulDialogAboutCreatingInscription(res, context);
-                } else {
-                  // ignore: use_build_context_synchronously
-                  showFailedDialogAboutCreatingInscription(res, context);
-                }
-              },
+              onPressed: onSubmit,
               child: const Text(submitText),
             )
           ],

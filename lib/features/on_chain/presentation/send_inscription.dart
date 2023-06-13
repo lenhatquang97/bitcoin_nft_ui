@@ -14,16 +14,33 @@ class SendInscriptionScreen extends StatefulWidget {
   State<SendInscriptionScreen> createState() => _SendInscriptionScreenState();
 }
 
-const chooseNftToSendText = "Choose NFT to send";
-const receiptAddressText = "Input receipt address";
+const chooseNftToSendText = "Step 1: Fetch NFT and choose NFT to send";
+const fetchNftText = "Fetch NFT";
+const receiptAddressText = "Step 2: Type receipt address to transfer NFT";
 const receiptAddressTextHint = "Receipt address";
-
+const typeSatoshiText = "Step 3: Type satoshi for keeping NFT";
+const satoshiNumberTextHint = "Must be number";
+const feeCalculationText = "Step 4: Estimate fee and modify satoshi";
+const calculateFeeText = "Calculate fee";
+const submitTransactionText = "Step 5: Submit transaction";
+const submitText = "Submit";
 class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
   String receiverAddress = "";
   int nftChoice = -1;
   int feeValue = 0;
   int satoshiVal = 0;
   List<NftStructure> availableNfts = [];
+
+  /* 
+    UI Logic function with onA, onB, onC
+  */
+  void onFetchNft() async {
+    final value = await NftGetterDomain.nftGetterDomain(
+        "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v");
+    setState(() {
+      availableNfts = value;
+    });
+  }
 
   void onSubmit() async {
     if (availableNfts.isNotEmpty) {
@@ -45,7 +62,8 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
     if (availableNfts.isNotEmpty) {
       const passphrase = "12345";
       final txId = availableNfts[nftChoice].txId;
-      final result = await UploadInscriptionDomain.estimateFeeDomain(receiverAddress, passphrase, 1, satoshiVal, txId);
+      final result = await UploadInscriptionDomain.estimateFeeDomain(
+          receiverAddress, passphrase, 1, satoshiVal, txId);
       setState(() {
         feeValue = result;
       });
@@ -61,18 +79,30 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            //STEP 1
             const Text(
               chooseNftToSendText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 10),
-            //Render NFT
+            const SizedBox(height: 20),
             listAvailableNFTs(nftChoice, (ind) {
               setState(() {
                 nftChoice = ind;
               });
             }),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(60),
+              ),
+              onPressed: onFetchNft,
+              child: const Text(fetchNftText),
+            ),
             const SizedBox(height: 20),
+            //STEP 2
             const Text(
               receiptAddressText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -91,15 +121,16 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
             const SizedBox(
               height: 20,
             ),
+            //STEP 3
             const Text(
-              "Satoshi for keeping NFT",
+              typeSatoshiText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             TextFormField(
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: const InputDecoration(
-                hintText: "Must be number",
+                hintText: satoshiNumberTextHint,
               ),
               onChanged: (value) => setState(() {
                 if (value.isNotEmpty) {
@@ -108,18 +139,18 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
               }),
             ),
             const SizedBox(height: 20),
+            //STEP 4
+            const Text(
+              feeCalculationText,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 FeeBlockWidget(
-                    feeTitle: "High fee (1 blocks)",
                     feeValue: feeValue,
-                    transactionSize: 100,
-                    satoshiReceive: satoshiVal,
-                    transactionFeeChoice: 0,
-                    feeNumber: 0,
-                    voidCallback: (){}
-                ),
+                    satoshiReceive: satoshiVal),
               ],
             ),
             const SizedBox(
@@ -130,25 +161,13 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: () async {
-                final value = await NftGetterDomain.nftGetterDomain(
-                    "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v");
-                setState(() {
-                  availableNfts = value;
-                });
-              },
-              child: const Text("Fetch NFT"),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(60),
-              ),
               onPressed: onCalculateFee,
-              child: const Text("Calculate fee"),
+              child: const Text(calculateFeeText),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              submitTransactionText,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -157,10 +176,9 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
                 minimumSize: const Size.fromHeight(60),
               ),
               onPressed: onSubmit,
-              child: const Text("Submit"),
+              child: const Text(submitText),
             ),
             const SizedBox(height: 20),
-            
           ],
         ),
       ),

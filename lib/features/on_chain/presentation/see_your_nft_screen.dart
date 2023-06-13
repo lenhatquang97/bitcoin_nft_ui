@@ -1,6 +1,7 @@
 import 'package:bitcoin_nft_ui/features/on_chain/data/nft_getter.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/domain/nft_getter_domain.dart';
 import 'package:flutter/material.dart';
+
 class SeeYourNftScreen extends StatefulWidget {
   const SeeYourNftScreen({super.key});
 
@@ -8,11 +9,21 @@ class SeeYourNftScreen extends StatefulWidget {
   State<SeeYourNftScreen> createState() => _SeeYourNftScreenState();
 }
 
-const seeYourNftText = "See your NFTs";
+const seeYourNftText = "Your NFT Collection";
 const refreshText = "Refresh";
 
 class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
   final List<NftStructure> availableNfts = [];
+
+  void onRefresh() async {
+    final value = await NftGetterDomain.nftGetterDomain(
+        "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v");
+    setState(() {
+      availableNfts.clear();
+      availableNfts.addAll(value);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -34,13 +45,7 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: () async {
-                final value = await NftGetterDomain.nftGetterDomain("n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v");
-                setState(() {
-                  availableNfts.clear();
-                  availableNfts.addAll(value);
-                });
-              },
+              onPressed: onRefresh,
               child: const Text(refreshText),
             )
           ],
@@ -65,12 +70,19 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Align(
+                alignment: Alignment.center,
+                child: Icon(Icons.text_snippet, size: 120, color: Colors.red)),
+            const SizedBox(height: 20),
+            Flexible(
+                child: Text(structure.txId,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold))),
+            const SizedBox(height: 20),
+            Align(
               alignment: Alignment.center,
-              child: Icon(Icons.text_snippet, size: 120, color: Colors.red)),
-            const SizedBox(height: 20),
-            Flexible(child: Text(structure.txId, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
-            const SizedBox(height: 20),
-            Text(structure.mimeType)
+              child: Text(structure.mimeType),
+            ),
+            
           ],
         ),
       );
