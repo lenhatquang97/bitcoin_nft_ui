@@ -5,10 +5,11 @@ import 'package:convert/convert.dart';
 
 class UploadInscriptionDomain {
   static Future<int> estimateFeeDomain(
+    String address, String passphrase,
       int numBlocks, int satoshiVal, String binaryHex) async {
-    final req = UploadInscriptionRequest(
-        address: "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v",
-        passphrase: "12345",
+    final req = InscriptionRequest(
+        address: address,
+        passphrase: passphrase,
         amount: satoshiVal,
         isRef: false,
         urls: [binaryHex],
@@ -30,21 +31,21 @@ class UploadInscriptionDomain {
     return hexStr;
   }
 
-  static Future<UploadInscriptionResponse> uploadInscriptionDomain(int numBlocks, int satoshiVal, String filePath) async {
-    final req = UploadInscriptionRequest(
+  static Future<InscriptionResponse> uploadInscriptionDomain(int numBlocks, int satoshiVal, String filePath) async {
+    final req = InscriptionRequest(
         address: "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v",
         passphrase: "12345",
-        amount: satoshiVal,
         isRef: false,
-        urls: [filePath],
-        numBlocks: numBlocks,
-        isSendNft: true
+        isSendNft: true,
+        numBlocks: 1,
+        amount: satoshiVal,
+        urls: [filePath]
         );
     try {
       final res = await uploadInscription(req);
       return res;
     } catch (e) {
-      return const UploadInscriptionResponse(revealTxId: "",commitTxId: "", fee: -1);
+      return const InscriptionResponse(revealTxId: "",commitTxId: "", fee: -1);
     }
   }
 }

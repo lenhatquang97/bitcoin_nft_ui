@@ -1,7 +1,6 @@
-import 'dart:developer';
-import 'package:bitcoin_nft_ui/features/on_chain/data/upload_inscription.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/domain/upload_inscription_domain.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/presentation/fee_block_info.dart';
+import 'package:bitcoin_nft_ui/features/on_chain/presentation/presentation_dialog.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
@@ -134,12 +133,14 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
               ),
               onPressed: () async {
                 if (files.isNotEmpty) {
+                  const address = "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v";
+                  const passphrase = "12345";
                   final hexBinaryFile =
                       await UploadInscriptionDomain.readBinaryFileDomain(
                           files[0].path);
                   final highFee =
                       await UploadInscriptionDomain.estimateFeeDomain(
-                          1, satoshiVal, hexBinaryFile);
+                          address, passphrase, 1, satoshiVal, hexBinaryFile);
                   setState(() {
                     feeChoices[0] = highFee;
                   });
@@ -166,7 +167,6 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                   // ignore: use_build_context_synchronously
                   showFailedDialogAboutCreatingInscription(res, context);
                 }
-                log(res.toJson());
               },
               child: const Text(submitText),
             )
@@ -174,34 +174,6 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
         ),
       ),
     );
-  }
-
-  void showSuccessfulDialogAboutCreatingInscription(UploadInscriptionResponse res, BuildContext context){
-    Widget okButton = TextButton(onPressed: () {
-      Navigator.of(context).pop();
-    }, child: const Text("OK"));
-    AlertDialog alert = AlertDialog(
-      title: const Text("Upload inscription successfully"),
-      content: Text("Your commit transaction id is ${res.commitTxId}\nYour reveal transaction id is ${res.revealTxId}"),
-      actions: [okButton],
-    );
-    
-    showDialog(context: context, builder: (context) => alert);
-
-  }
-
-  void showFailedDialogAboutCreatingInscription(UploadInscriptionResponse res, BuildContext context){
-    Widget okButton = TextButton(onPressed: () {
-      Navigator.of(context).pop();
-    }, child: const Text("OK"));
-    AlertDialog alert = AlertDialog(
-      title: const Text("Upload inscription failed"),
-      content: const Text("Failed to create inscription"),
-      actions: [okButton],
-    );
-    
-    showDialog(context: context, builder: (context) => alert);
-
   }
 
   Widget buildFiles() => Column(

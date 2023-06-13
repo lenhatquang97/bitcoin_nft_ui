@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:bitcoin_nft_ui/api/api_constants.dart';
 import 'package:http/http.dart';
 
-class UploadInscriptionRequest {
+class InscriptionRequest {
   final String address;
   final String passphrase;
   final int amount;
@@ -12,10 +12,10 @@ class UploadInscriptionRequest {
   final int numBlocks;
   final List<String> urls;
   final bool isSendNft;
-  const UploadInscriptionRequest({required this.address, required this.passphrase, required this.amount, required this.isRef, required this.urls, required this.numBlocks, required this.isSendNft});
+  const InscriptionRequest({required this.address, required this.passphrase, required this.amount, required this.isRef, required this.urls, required this.numBlocks, required this.isSendNft});
   //From json and to json converter
-  factory UploadInscriptionRequest.fromJson(Map<String, dynamic> json) {
-    return UploadInscriptionRequest(
+  factory InscriptionRequest.fromJson(Map<String, dynamic> json) {
+    return InscriptionRequest(
       address: json['address'],
       passphrase: json['passphrase'],
       amount: json['amount'],
@@ -40,44 +40,44 @@ class UploadInscriptionRequest {
 
 }
 
-class UploadInscriptionResponse {
+class InscriptionResponse {
   final String revealTxId;
   final String commitTxId;
   final int fee;
-  const UploadInscriptionResponse({required this.revealTxId, required this.commitTxId, required this.fee});
+  const InscriptionResponse({required this.revealTxId, required this.commitTxId, required this.fee});
 
   //Convert from and to json
-  factory UploadInscriptionResponse.fromJson(String json) {
+  factory InscriptionResponse.fromJson(String json) {
     final Map<String, dynamic> map = jsonDecode(json);
-    return UploadInscriptionResponse(
+    return InscriptionResponse(
       revealTxId: map["data"]['revealTxId'],
       commitTxId: map["data"]['commitTxId'],
       fee: map["data"]['fee']
     );
   }
 
-  String toJson() {
-    return jsonEncode({
+  Map<String, dynamic> toJson() {
+    return {
       'revealTxId': revealTxId,
       'commitTxId': commitTxId,
       'fee': fee
-    });
+    };
   }
 }
 
-Future<UploadInscriptionResponse> uploadInscription(UploadInscriptionRequest req) async{
+Future<InscriptionResponse> uploadInscription(InscriptionRequest req) async{
   const url = '$apiEndpoint/send';
   final headers = {'Content-Type': 'application/json'};
   final response = await post(Uri.parse(url), headers: headers, body: jsonEncode(req));
   log("uploadInscription API returns ${response.statusCode} and ${response.body}");
   if (response.statusCode == 200) {
-    return UploadInscriptionResponse.fromJson(response.body);
+    return InscriptionResponse.fromJson(response.body);
   } else {
     throw Exception('Failed to upload inscription');
   }
 }
 
-Future<int> estimateFee(UploadInscriptionRequest req) async {
+Future<int> estimateFee(InscriptionRequest req) async {
   const url = '$apiEndpoint/predefine';
   final headers = {'Content-Type': 'application/json'};
   final response = await post(Uri.parse(url), headers: headers, body: jsonEncode(req));

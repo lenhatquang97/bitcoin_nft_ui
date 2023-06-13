@@ -38,9 +38,7 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
                 final value = await NftGetterDomain.nftGetterDomain("n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v");
                 setState(() {
                   availableNfts.clear();
-                  for(int i=0;i<20;i++) {
-                    availableNfts.addAll(value);
-                  }
+                  availableNfts.addAll(value);
                 });
               },
               child: const Text(refreshText),

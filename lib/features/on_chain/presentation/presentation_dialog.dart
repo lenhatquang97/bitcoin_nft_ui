@@ -1,0 +1,35 @@
+import 'package:bitcoin_nft_ui/features/on_chain/data/upload_inscription.dart';
+import 'package:flutter/material.dart';
+
+void showSuccessfulDialogAboutCreatingInscription(
+    InscriptionResponse res, BuildContext context) {
+  Widget okButton = TextButton(
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+      child: const Text("OK"));
+  AlertDialog alert = AlertDialog(
+    title: const Text("Upload inscription successfully"),
+    content: Text(
+        "Your commit transaction id is ${res.commitTxId}\nYour reveal transaction id is ${res.revealTxId}"),
+    actions: [okButton],
+  );
+
+  showDialog(context: context, builder: (context) => alert);
+}
+
+void showFailedDialogAboutCreatingInscription(
+    InscriptionResponse res, BuildContext context) {
+  Widget okButton = TextButton(
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+      child: const Text("OK"));
+  AlertDialog alert = AlertDialog(
+    title: const Text("Upload inscription failed"),
+    content: const Text("Failed to create inscription"),
+    actions: [okButton],
+  );
+
+  showDialog(context: context, builder: (context) => alert);
+}
