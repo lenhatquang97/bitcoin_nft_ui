@@ -6,23 +6,45 @@ class SendAndExportProofScreen extends StatefulWidget {
   const SendAndExportProofScreen({super.key});
 
   @override
-  State<SendAndExportProofScreen> createState() => _SendAndExportProofScreenState();
+  State<SendAndExportProofScreen> createState() =>
+      _SendAndExportProofScreenState();
 }
 
 const sendAndExportProofText = 'Send and export proof';
 const chooseNftToSendText = "Choose multiple NFTs to send";
 const receiptAddressText = "Input receipt address";
 const receiptAddressTextHint = "Receipt address";
+const urlToExportText = "URL to export";
+const exportProofText = "Export proof";
+const submitText = "Submit";
+const outputText = "Output";
 
 class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
-    String receiverAddress = "";
-    String urlToExport = "";
-    ExportProofResponse showedRes = const ExportProofResponse(id: "", url: "", memo: "");
+  String receiverAddress = "";
+  String urlToExport = "";
+  ExportProofResponse showedRes =
+      const ExportProofResponse(id: "", url: "", memo: "");
 
-  final List<String> availableNfts = ["Board Ape 1", "Board Ape 2", "Board Ape 3"];
+  final List<String> availableNfts = [
+    "Board Ape 1",
+    "Board Ape 2",
+    "Board Ape 3"
+  ];
+
+  void onSubmit() async {}
+
+  void onExportProof() async {
+    final res = await ImportProofDomain.exportProofDomain(urlToExport);
+    if (res.id.isNotEmpty) {
+      setState(() {
+        showedRes = res;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-        return Padding(
+    return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
@@ -34,14 +56,16 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            //Render NFT 
+            //Render NFT
             listAvailableNFTs(),
             const SizedBox(height: 20),
             const Text(
               receiptAddressText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             TextFormField(
               decoration: const InputDecoration(
                 hintText: receiptAddressTextHint,
@@ -56,42 +80,39 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: () {},
-              child: const Text("Submit"),
+              onPressed: onSubmit,
+              child: const Text(submitText),
             ),
             const SizedBox(height: 20),
             const Text(
-              "Export proof",
+              exportProofText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             TextFormField(
               decoration: const InputDecoration(
-                hintText: "URL to export",
+                hintText: urlToExportText,
               ),
               onChanged: (value) => setState(() {
                 urlToExport = value;
               }),
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: () async {
-                final res = await ImportProofDomain.exportProofDomain(urlToExport);
-                if(res.id.isNotEmpty) {
-                    setState(() {
-                      showedRes = res;
-                    });
-                }
-              },
-              child: const Text("Export proof"),
+              onPressed: onExportProof,
+              child: const Text(exportProofText),
             ),
             const SizedBox(height: 20),
             const Text(
-              "Output",
+              outputText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
@@ -112,12 +133,12 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
       ));
 
   Widget buildFile(String nftName) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4),
-    child: Row(
-      children: [
-        const Icon(Icons.text_snippet, size: 40, color: Colors.red),
-        Text(nftName)
-      ],
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            const Icon(Icons.text_snippet, size: 40, color: Colors.red),
+            Text(nftName)
+          ],
         ),
-  );
+      );
 }
