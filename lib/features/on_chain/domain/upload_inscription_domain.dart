@@ -6,13 +6,13 @@ import 'package:convert/convert.dart';
 class UploadInscriptionDomain {
   static Future<int> estimateFeeDomain(
     String address, String passphrase,
-      int numBlocks, int satoshiVal, String binaryHex) async {
+      int numBlocks, int satoshiVal, List<String> data, bool isRef) async {
     final req = InscriptionRequest(
         address: address,
         passphrase: passphrase,
         amount: satoshiVal,
-        isRef: false,
-        urls: [binaryHex],
+        isRef: isRef,
+        urls: data,
         numBlocks: numBlocks,
         isSendNft: true
         );

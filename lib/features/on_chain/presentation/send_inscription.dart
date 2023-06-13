@@ -63,7 +63,7 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
       const passphrase = "12345";
       final txId = availableNfts[nftChoice].txId;
       final result = await UploadInscriptionDomain.estimateFeeDomain(
-          receiverAddress, passphrase, 1, satoshiVal, txId);
+          receiverAddress, passphrase, 1, satoshiVal, [txId], true);
       setState(() {
         feeValue = result;
       });
@@ -106,9 +106,6 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
             const Text(
               receiptAddressText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              height: 20,
             ),
             TextFormField(
               decoration: const InputDecoration(

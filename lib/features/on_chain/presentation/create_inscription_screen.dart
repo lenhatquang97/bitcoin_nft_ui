@@ -43,7 +43,7 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
       final hexBinaryFile =
           await UploadInscriptionDomain.readBinaryFileDomain(files[0].path);
       final highFee = await UploadInscriptionDomain.estimateFeeDomain(
-          address, passphrase, 1, satoshiVal, hexBinaryFile);
+          address, passphrase, 1, satoshiVal, [hexBinaryFile], false);
       setState(() {
         feeValue = highFee;
       });
