@@ -49,7 +49,6 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
       setState(() {
         availableNfts.clear();
         availableNfts.addAll(res.data);
-        print(res.data.map((e) => e.url).toList().join(";"));
       });
     }
   }

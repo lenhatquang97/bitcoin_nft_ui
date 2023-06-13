@@ -1,5 +1,6 @@
 import 'package:bitcoin_nft_ui/features/on_chain/data/nft_getter.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/domain/nft_getter_domain.dart';
+import 'package:bitcoin_nft_ui/ui/file_renderer.dart';
 import 'package:flutter/material.dart';
 
 class SeeYourNftScreen extends StatefulWidget {
@@ -39,7 +40,6 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
             ),
             const SizedBox(height: 20),
             buildGrid(),
-            const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -69,20 +69,15 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Align(
-                alignment: Alignment.center,
-                child: Icon(Icons.text_snippet, size: 120, color: Colors.red)),
-            const SizedBox(height: 20),
+            // const Align(
+            //     alignment: Alignment.center,
+            //     child: Icon(Icons.text_snippet, size: 120, color: Colors.red)),
+            FileRendererWidget(hexStr: structure.hexData, mimeType: structure.mimeType, txId: structure.txId),
+            const SizedBox(height:20),
             Flexible(
-                child: Text(structure.txId,
+                child: Text("Transaction ID: ${structure.txId}",
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold))),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.center,
-              child: Text(structure.mimeType),
-            ),
-            
           ],
         ),
       );

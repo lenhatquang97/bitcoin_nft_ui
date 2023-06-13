@@ -13,8 +13,11 @@ const uploadInscriptionText = "Upload your inscription";
 const inscriptionNoteText =
     "Note that inscription can be viewed by anyone and they can be never changed or deleted";
 const satoshiValue = "Set satoshi value for this inscription";
+const satoshiNoteText =
+    "Note that this satoshi value is used for next transaction if you want to transfer NFT to other people";
 const satoshiValueTextHint = "Satoshi value";
 const transactionFeeText = "Set your transaction fee";
+const transactionFeeNoteText = "You need to estimate fee before submitting to the chain.";
 const submitText = "Submit";
 const estimateFeeText = "Estimate fee";
 
@@ -77,7 +80,7 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(
-              height: 20,
+              height: 10,
             ),
             const Text(inscriptionNoteText),
             const SizedBox(
@@ -94,7 +97,9 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                 })
               },
               child: Container(
-                color: Colors.blue,
+                decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(16)),
                 height: 150,
                 child: const Center(
                   child: Column(
@@ -122,6 +127,11 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
               satoshiValue,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Text(satoshiNoteText),
+
             TextFormField(
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -135,18 +145,19 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
               }),
             ),
             const SizedBox(height: 20),
-
             //STEP 3
             const Text(
               transactionFeeText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 10),
+            const Text(transactionFeeNoteText),
             const SizedBox(height: 20),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                FeeBlockWidget(
-                    feeValue: feeValue, satoshiReceive: satoshiVal),
+                FeeBlockWidget(feeValue: feeValue, satoshiReceive: satoshiVal),
               ],
             ),
             const SizedBox(

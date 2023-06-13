@@ -18,19 +18,19 @@ class OnChainScreen extends StatelessWidget {
                 Tab(icon: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Upload inscription', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Mint an NFT', style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 )),
                 Tab(icon: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Send inscription', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Send an NFT', style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 )),
                 Tab(icon: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Your NFTs', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Your NFT collection', style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 )),
               ],

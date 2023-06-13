@@ -12,7 +12,6 @@ class FeeBlockWidget extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.blue,
           borderRadius: BorderRadius.circular(16)
