@@ -1,7 +1,6 @@
 import 'package:bitcoin_nft_ui/features/off_chain/presentation/offchain_screen.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/presentation/on_chain_screen.dart';
 import 'package:bitcoin_nft_ui/features/settings/settings_screen.dart';
-import 'package:bitcoin_nft_ui/features/transactions/presentation/transaction_screen.dart';
 import 'package:flutter/material.dart';
 
 class DashboardScreen extends StatelessWidget {

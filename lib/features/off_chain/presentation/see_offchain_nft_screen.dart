@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:bitcoin_nft_ui/features/off_chain/data/offchain_nft_api.dart';
 import 'package:bitcoin_nft_ui/features/off_chain/domain/import_proof_domain.dart';
 import 'package:bitcoin_nft_ui/ui/web_renderer.dart';
