@@ -92,12 +92,6 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 20),
-                    listAvailableNFTs(nftChoice, (ind) {
-                      setState(() {
-                        nftChoice = ind;
-                      });
-                    }),
                     const SizedBox(
                       height: 20,
                     ),
@@ -111,6 +105,12 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
                       },
                       child: const Text(fetchNftText),
                     ),
+                    const SizedBox(height: 20),
+                    listAvailableNFTs(nftChoice, (ind) {
+                      setState(() {
+                        nftChoice = ind;
+                      });
+                    }),
                     const SizedBox(height: 20),
                     //STEP 2
                     const Text(

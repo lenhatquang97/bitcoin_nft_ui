@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:bitcoin_nft_ui/features/off_chain/data/offchain_nft_api.dart';
 import 'package:bitcoin_nft_ui/features/off_chain/domain/import_proof_domain.dart';
+import 'package:bitcoin_nft_ui/ui/web_renderer.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -55,6 +58,7 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -115,15 +119,18 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-              listAvailableNFTs()
+              listAvailableNFTs(width)
             ]),
       ),
     );
   }
 
-  Widget listAvailableNFTs() => SingleChildScrollView(
+  Widget listAvailableNFTs(double width) => SingleChildScrollView(
       child: availableNfts.isNotEmpty
-          ? Column(
+          ? GridView.count(
+              crossAxisCount: width < 900 ? 2 : 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               children: availableNfts.map(buildFile).toList(),
             )
           : const Column(
@@ -132,10 +139,13 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
 
   Widget buildFile(OffChainNftStructure res) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
+        child: Column(
           children: [
-            const Icon(Icons.text_snippet, size: 40, color: Colors.red),
-            Text(res.id)
+            WebRendererWidget(url: res.url),
+            const SizedBox(height: 10),
+            Flexible(child: Text(res.id, textAlign: TextAlign.center)),
+            const SizedBox(height: 10),
+            Flexible(child: Text(res.memo, textAlign: TextAlign.center,))
           ],
         ),
       );

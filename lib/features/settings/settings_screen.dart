@@ -25,7 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Expanded(
-                      flex: 2,
+                      flex: 1,
                       child: Text(
                         "Your base address",
                         style:

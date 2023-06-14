@@ -12,7 +12,10 @@ class FileRendererWidget extends StatelessWidget {
   final String mimeType;
   final String txId;
   const FileRendererWidget(
-      {super.key, required this.hexStr, required this.mimeType, required this.txId});
+      {super.key,
+      required this.hexStr,
+      required this.mimeType,
+      required this.txId});
 
   //Convert hex string to text
   Widget textRenderer() {
@@ -32,14 +35,15 @@ class FileRendererWidget extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
-        ElevatedButton(onPressed: () {
-          final fileExtension = extensionFromMime(mimeType);
-          writeToFile(context,'$txId.$fileExtension');
-        }, child: const Text("Export file"))
+        ElevatedButton(
+            onPressed: () {
+              final fileExtension = extensionFromMime(mimeType);
+              writeToFile(context, '$txId.$fileExtension');
+            },
+            child: const Text("Export file"))
       ],
     );
   }
-
 
   //Write bytes into file
   void writeToFile(BuildContext context, String fileName) async {

@@ -1,9 +1,16 @@
+import 'dart:io';
+
 import 'package:bitcoin_nft_ui/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:bitcoin_nft_ui/features/settings/data/ui_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:window_size/window_size.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isMacOS || Platform.isLinux) {
+    setWindowMinSize(const Size(800, 800));
+  }
   runApp(const MyApp());
 }
 

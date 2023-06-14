@@ -19,16 +19,18 @@ class SendAndExportProofScreen extends StatefulWidget {
 }
 
 const sendAndExportProofText = 'Send and export proof';
-const chooseNftToSendText = "Choose multiple NFTs to send";
-const receiptAddressText = "Input receipt address";
+const chooseNftToSendText = "Step 1: Choose multiple NFTs to send";
+const receiptAddressText = "Step 3: Input receipt address";
 const receiptAddressTextHint = "Receipt address";
 const urlToExportText = "URL to export";
+const exportProofStepText = "Step 5: Export proof";
 const exportProofText = "Export proof";
 const submitText = "Submit";
 const outputText = "Output";
-const feeCalculationText = "Estimate fee and modify satoshi";
+const outputNoteText = "Please copy this proof into another place";
+const feeCalculationText = "Step 4: Estimate fee, modify satoshi and submit";
 const calculateFeeText = "Calculate fee";
-const satoshiValue = "Set satoshi value for off-chain NFT";
+const satoshiValue = "Step 2: Set satoshi value for off-chain NFT";
 const satoshiValueTextHint = "Satoshi value";
 const refreshText = "Fetch off-chain NFTs";
 
@@ -194,7 +196,7 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
             ),
             const SizedBox(height: 20),
             const Text(
-              exportProofText,
+              exportProofStepText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(
@@ -224,12 +226,14 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
               outputText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 10),
+            const Text(outputNoteText),
             const SizedBox(height: 20),
-            showedRes.id.isNotEmpty ? Text(showedRes.id) : const Text(""),
+            showedRes.id.isNotEmpty ? SelectableText(showedRes.id) : const Text(""),
             const SizedBox(height: 20),
-            showedRes.url.isNotEmpty ? Text(showedRes.url) : const Text(""),
+            showedRes.url.isNotEmpty ? SelectableText(showedRes.url) : const Text(""),
             const SizedBox(height: 20),
-            showedRes.memo.isNotEmpty ? Text(showedRes.memo) : const Text(""),
+            showedRes.memo.isNotEmpty ? SelectableText(showedRes.memo) : const Text(""),
           ],
         ),
       ),

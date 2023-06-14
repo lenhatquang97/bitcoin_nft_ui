@@ -13,13 +13,12 @@ class SeeYourNftScreen extends StatefulWidget {
 }
 
 const seeYourNftText = "Your NFT Collection";
-const refreshText = "Refresh";
+const refreshText = "Fetch NFT";
 
 class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
   final List<NftStructure> availableNfts = [];
 
   void onRefresh(String baseAddress) async {
-    print(baseAddress);
     final value = await NftGetterDomain.nftGetterDomain(baseAddress);
     setState(() {
       availableNfts.clear();
@@ -37,23 +36,38 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      seeYourNftText,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          seeYourNftText,
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                          ),
+                          onPressed: () {
+                            onRefresh(value.yourAddress);
+                          },
+                          child: const Text(refreshText),
+                        )
+                      ],
                     ),
                     const SizedBox(height: 20),
-                    buildGrid(),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        minimumSize: const Size.fromHeight(60),
-                      ),
-                      onPressed: () {
-                        onRefresh(value.yourAddress);
-                      },
-                      child: const Text(refreshText),
-                    )
+                    availableNfts.isNotEmpty ? buildGrid() : const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 20),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Icon(Icons.close, size: 120),
+                        ),
+                        SizedBox(height: 20),
+                        Text("Sorry, there are no NFTs!", style: TextStyle(fontSize: 20),)
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -84,8 +98,8 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
                 txId: structure.txId),
             const SizedBox(height: 20),
             Text("Transaction ID: ${structure.txId}",
-                style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold)),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             Expanded(
                 child: Text("Original transaction ID: ${structure.originTxId}",
                     style: const TextStyle(

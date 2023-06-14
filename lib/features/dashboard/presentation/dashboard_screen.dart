@@ -10,7 +10,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 4,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             bottom: const TabBar(
@@ -34,14 +34,6 @@ class DashboardScreen extends StatelessWidget {
                 Tab(icon: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.currency_bitcoin),
-                    SizedBox(width: 2),
-                    Text('Transactions', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ],
-                )),
-                Tab(icon: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
                     Icon(Icons.settings),
                     SizedBox(width: 2),
                     Text('Settings', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -55,7 +47,6 @@ class DashboardScreen extends StatelessWidget {
             children: [
               OnChainScreen(),
               OffChainScreen(),
-              TransactionScreen(),
               SettingsScreen()
             ],
           ),
