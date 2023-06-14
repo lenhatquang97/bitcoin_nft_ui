@@ -4,8 +4,10 @@ import 'package:bitcoin_nft_ui/features/on_chain/domain/send_inscription_domain.
 import 'package:bitcoin_nft_ui/features/on_chain/domain/upload_inscription_domain.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/presentation/fee_block_info.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/presentation/presentation_dialog.dart';
+import 'package:bitcoin_nft_ui/features/settings/data/ui_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class SendInscriptionScreen extends StatefulWidget {
   const SendInscriptionScreen({super.key});
@@ -24,6 +26,7 @@ const feeCalculationText = "Step 4: Estimate fee and modify satoshi";
 const calculateFeeText = "Calculate fee";
 const submitTransactionText = "Step 5: Submit transaction";
 const submitText = "Submit";
+
 class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
   String receiverAddress = "";
   int nftChoice = -1;
@@ -34,20 +37,24 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
   /* 
     UI Logic function with onA, onB, onC
   */
-  void onFetchNft() async {
-    final value = await NftGetterDomain.nftGetterDomain(
-        "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v");
+  void onFetchNft(String baseAddress) async {
+    final value = await NftGetterDomain.nftGetterDomain(baseAddress);
     setState(() {
       availableNfts = value;
     });
   }
 
-  void onSubmit() async {
+  void onSubmit(String passphrase) async {
     if (availableNfts.isNotEmpty) {
-      const passphrase = "12345";
-      final txId = availableNfts[nftChoice].txId;
+      final refTxId = availableNfts[nftChoice].txId;
+      final originTxId = availableNfts[nftChoice].originTxId;
+      /*
+        txIdRef = data.([]string)[0]
+				originTxId := data.([]string)[1]
+				dataSend = []byte(originTxId)
+       */
       final result = await SendInscriptionDomain.sendInscriptionDomain(
-          receiverAddress, passphrase, satoshiVal, txId);
+          receiverAddress, passphrase, satoshiVal, [refTxId, originTxId]);
       if (result.fee != -1) {
         // ignore: use_build_context_synchronously
         showSuccessfulDialogAboutCreatingInscription(result, context);
@@ -58,12 +65,11 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
     }
   }
 
-  void onCalculateFee() async {
+  void onCalculateFee(String passphrase) async {
     if (availableNfts.isNotEmpty) {
-      const passphrase = "12345";
-      final txId = availableNfts[nftChoice].txId;
+      final originTxId = availableNfts[nftChoice].originTxId;
       final result = await UploadInscriptionDomain.estimateFeeDomain(
-          receiverAddress, passphrase, 1, satoshiVal, [txId], true);
+          receiverAddress, passphrase, 1, satoshiVal, [originTxId], true);
       setState(() {
         feeValue = result;
       });
@@ -72,114 +78,125 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //STEP 1
-            const Text(
-              chooseNftToSendText,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            listAvailableNFTs(nftChoice, (ind) {
-              setState(() {
-                nftChoice = ind;
-              });
-            }),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(60),
+    return Consumer<UiSettings>(
+        builder: (context, value, child) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //STEP 1
+                    const Text(
+                      chooseNftToSendText,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    listAvailableNFTs(nftChoice, (ind) {
+                      setState(() {
+                        nftChoice = ind;
+                      });
+                    }),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        minimumSize: const Size.fromHeight(60),
+                      ),
+                      onPressed: () {
+                        onFetchNft(value.yourAddress);
+                      },
+                      child: const Text(fetchNftText),
+                    ),
+                    const SizedBox(height: 20),
+                    //STEP 2
+                    const Text(
+                      receiptAddressText,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        hintText: receiptAddressTextHint,
+                      ),
+                      onChanged: (value) => setState(() {
+                        receiverAddress = value;
+                      }),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    //STEP 3
+                    const Text(
+                      typeSatoshiText,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    TextFormField(
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      decoration: const InputDecoration(
+                        hintText: satoshiNumberTextHint,
+                      ),
+                      onChanged: (value) => setState(() {
+                        if (value.isNotEmpty) {
+                          satoshiVal = int.parse(value);
+                        }
+                      }),
+                    ),
+                    const SizedBox(height: 20),
+                    //STEP 4
+                    const Text(
+                      feeCalculationText,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        FeeBlockWidget(
+                            feeValue: feeValue, satoshiReceive: satoshiVal),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        minimumSize: const Size.fromHeight(60),
+                      ),
+                      onPressed: () {
+                        onCalculateFee(value.passphrase);
+                      },
+                      child: const Text(calculateFeeText),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      submitTransactionText,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        minimumSize: const Size.fromHeight(60),
+                      ),
+                      onPressed: () {
+                        onSubmit(value.passphrase);
+                      },
+                      child: const Text(submitText),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
-              onPressed: onFetchNft,
-              child: const Text(fetchNftText),
-            ),
-            const SizedBox(height: 20),
-            //STEP 2
-            const Text(
-              receiptAddressText,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: receiptAddressTextHint,
-              ),
-              onChanged: (value) => setState(() {
-                receiverAddress = value;
-              }),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            //STEP 3
-            const Text(
-              typeSatoshiText,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            TextFormField(
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                hintText: satoshiNumberTextHint,
-              ),
-              onChanged: (value) => setState(() {
-                if (value.isNotEmpty) {
-                  satoshiVal = int.parse(value);
-                }
-              }),
-            ),
-            const SizedBox(height: 20),
-            //STEP 4
-            const Text(
-              feeCalculationText,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                FeeBlockWidget(
-                    feeValue: feeValue,
-                    satoshiReceive: satoshiVal),
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(60),
-              ),
-              onPressed: onCalculateFee,
-              child: const Text(calculateFeeText),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              submitTransactionText,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(60),
-              ),
-              onPressed: onSubmit,
-              child: const Text(submitText),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
+            ));
   }
 
   Widget listAvailableNFTs(int nftChoice, Function(int) callback) =>

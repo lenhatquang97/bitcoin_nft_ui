@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:bitcoin_nft_ui/api/api_constants.dart';
 import 'package:http/http.dart';
@@ -8,9 +7,10 @@ class NftStructure {
   final String hexData;
   final String mimeType;
   final String txId;
-  const NftStructure({required this.hexData, required this.mimeType, required this.txId});
+  final String originTxId;
+  const NftStructure({required this.hexData, required this.mimeType, required this.txId, required this.originTxId});
   factory NftStructure.fromJson(Map<String, dynamic> json){
-    return NftStructure(hexData: json["hexData"], mimeType: json["mimeType"], txId: json["txId"]);
+    return NftStructure(hexData: json["hexData"], mimeType: json["mimeType"], txId: json["txId"], originTxId: json["originTxId"]);
   }
 }
 
@@ -28,7 +28,7 @@ Future<NftResponse> getMultipleNftsBasedOnAddress(String address) async {
   final url = '$apiEndpoint/on-chain-nft?address=$address';
   final headers = {'Content-Type': 'application/json'};
   final response = await get(Uri.parse(url), headers: headers);
-  log("getMultipleNftsBasedOnAddress API returns ${response.statusCode} and ${response.body}");
+  //log("getMultipleNftsBasedOnAddress API returns ${response.statusCode} and ${response.body}");
   if (response.statusCode == 200) {
     return NftResponse.fromJson(response.body);
   } else {

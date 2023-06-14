@@ -1,7 +1,9 @@
 import 'package:bitcoin_nft_ui/features/on_chain/data/nft_getter.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/domain/nft_getter_domain.dart';
+import 'package:bitcoin_nft_ui/features/settings/data/ui_settings.dart';
 import 'package:bitcoin_nft_ui/ui/file_renderer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SeeYourNftScreen extends StatefulWidget {
   const SeeYourNftScreen({super.key});
@@ -16,9 +18,9 @@ const refreshText = "Refresh";
 class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
   final List<NftStructure> availableNfts = [];
 
-  void onRefresh() async {
-    final value = await NftGetterDomain.nftGetterDomain(
-        "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v");
+  void onRefresh(String baseAddress) async {
+    print(baseAddress);
+    final value = await NftGetterDomain.nftGetterDomain(baseAddress);
     setState(() {
       availableNfts.clear();
       availableNfts.addAll(value);
@@ -27,37 +29,41 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              seeYourNftText,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            buildGrid(),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(60),
+    return Consumer<UiSettings>(
+        builder: (context, value, child) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      seeYourNftText,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    buildGrid(),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        minimumSize: const Size.fromHeight(60),
+                      ),
+                      onPressed: () {
+                        onRefresh(value.yourAddress);
+                      },
+                      child: const Text(refreshText),
+                    )
+                  ],
+                ),
               ),
-              onPressed: onRefresh,
-              child: const Text(refreshText),
-            )
-          ],
-        ),
-      ),
-    );
+            ));
   }
 
   //Generate widget that displays grid of NFTs but no line space
   Widget buildGrid() => GridView(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
+          crossAxisCount: 2,
         ),
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -72,10 +78,16 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
             // const Align(
             //     alignment: Alignment.center,
             //     child: Icon(Icons.text_snippet, size: 120, color: Colors.red)),
-            FileRendererWidget(hexStr: structure.hexData, mimeType: structure.mimeType, txId: structure.txId),
-            const SizedBox(height:20),
-            Flexible(
-                child: Text("Transaction ID: ${structure.txId}",
+            FileRendererWidget(
+                hexStr: structure.hexData,
+                mimeType: structure.mimeType,
+                txId: structure.txId),
+            const SizedBox(height: 20),
+            Text("Transaction ID: ${structure.txId}",
+                style: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.bold)),
+            Expanded(
+                child: Text("Original transaction ID: ${structure.originTxId}",
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold))),
           ],

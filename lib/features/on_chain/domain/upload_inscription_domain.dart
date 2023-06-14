@@ -31,10 +31,10 @@ class UploadInscriptionDomain {
     return hexStr;
   }
 
-  static Future<InscriptionResponse> uploadInscriptionDomain(int numBlocks, int satoshiVal, String filePath) async {
+  static Future<InscriptionResponse> uploadInscriptionDomain(String addr, String pass, int numBlocks, int satoshiVal, String filePath) async {
     final req = InscriptionRequest(
-        address: "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v",
-        passphrase: "12345",
+        address: addr,
+        passphrase: pass,
         isRef: false,
         isSendNft: true,
         numBlocks: 1,

@@ -1,10 +1,12 @@
 import 'package:bitcoin_nft_ui/features/on_chain/domain/upload_inscription_domain.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/presentation/fee_block_info.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/presentation/presentation_dialog.dart';
+import 'package:bitcoin_nft_ui/features/settings/data/ui_settings.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 const dropFileText = "Drop file here below";
 const dropFileNote =
@@ -39,22 +41,20 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
   /* 
     UI Logic function with onA, onB, onC
   */
-  void onEstimateFee() async {
+  void onEstimateFee(String baseAddress, String passphrase) async {
     if (files.isNotEmpty) {
-      const address = "n1Nd8J38uyDRLwh5ShAAPvbNrqBD1wee8v";
-      const passphrase = "12345";
       final hexBinaryFile =
           await UploadInscriptionDomain.readBinaryFileDomain(files[0].path);
       final highFee = await UploadInscriptionDomain.estimateFeeDomain(
-          address, passphrase, 1, satoshiVal, [hexBinaryFile], false);
+          baseAddress, passphrase, 1, satoshiVal, [hexBinaryFile], false);
       setState(() {
         feeValue = highFee;
       });
     }
   }
 
-  void onSubmit() async {
-    final res = await UploadInscriptionDomain.uploadInscriptionDomain(
+  void onSubmit(String addr, String pass) async {
+    final res = await UploadInscriptionDomain.uploadInscriptionDomain(addr, pass,
         feeChoice + 1, satoshiVal, files[0].path);
     if (res.fee != -1) {
       // ignore: use_build_context_synchronously
@@ -67,7 +67,7 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Consumer<UiSettings>(builder: (context, value, child) => Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
@@ -168,7 +168,9 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: onEstimateFee,
+              onPressed: () {
+                onEstimateFee(value.yourAddress, value.passphrase);
+              },
               child: const Text(estimateFeeText),
             ),
             const SizedBox(
@@ -181,13 +183,15 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: onSubmit,
+              onPressed: (){
+                onSubmit(value.yourAddress, value.passphrase);
+              },
               child: const Text(submitText),
             )
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget buildFiles() => Column(

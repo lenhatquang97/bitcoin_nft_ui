@@ -5,8 +5,10 @@ import 'package:bitcoin_nft_ui/features/off_chain/domain/send_proof_domain.dart'
 import 'package:bitcoin_nft_ui/features/on_chain/domain/upload_inscription_domain.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/presentation/fee_block_info.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/presentation/presentation_dialog.dart';
+import 'package:bitcoin_nft_ui/features/settings/data/ui_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class SendAndExportProofScreen extends StatefulWidget {
   const SendAndExportProofScreen({super.key});
@@ -53,9 +55,8 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
     }
   }
 
-  void onSubmit() async {
+  void onSubmit(String passphrase) async {
     if (availableNfts.isNotEmpty) {
-      const passphrase = "12345";
       final chosenNfts = availableNfts
           .asMap()
           .entries
@@ -74,9 +75,8 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
     }
   }
 
-  void onCalculateFee() async {
+  void onCalculateFee(String passphrase) async {
     if (availableNfts.isNotEmpty) {
-      const passphrase = "12345";
       final chosenNfts = availableNfts
           .asMap()
           .entries
@@ -102,7 +102,7 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Consumer<UiSettings>(builder: (context, value, child) => Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
@@ -176,7 +176,9 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: onCalculateFee,
+              onPressed: () {
+                onCalculateFee(value.passphrase);
+              },
               child: const Text(calculateFeeText),
             ),
             const SizedBox(height: 20),
@@ -185,7 +187,9 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
                 backgroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(60),
               ),
-              onPressed: onSubmit,
+              onPressed: () {
+                onSubmit(value.passphrase);
+              },
               child: const Text(submitText),
             ),
             const SizedBox(height: 20),
@@ -229,7 +233,7 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget listAvailableNFTs() => SingleChildScrollView(
