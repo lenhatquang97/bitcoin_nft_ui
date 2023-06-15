@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bitcoin_nft_ui/api/api_constants.dart';
 import 'package:http/http.dart';
@@ -18,9 +19,16 @@ class ImportProofRequest{
   }
 }
 
-Future<int> importProof(ImportProofRequest req) async{
-  const url = '$apiEndpoint/import';
-  final headers = {'Content-Type': 'application/json'};
-  final response = await post(Uri.parse(url), headers: headers, body: jsonEncode(req));
-  return response.statusCode;
+Future<int> importProof(ImportProofRequest req, String filePath) async{
+  final ipfsUrl = '$apiEndpoint/ipfs-link?filePath=$filePath';
+  final ipfsHeaders = {'Content-Type': 'application/json'};
+  final ipfsResponse = await get(Uri.parse(ipfsUrl), headers: ipfsHeaders);
+  if(ipfsResponse.statusCode == 200) {
+    log(ipfsResponse.body);
+    const url = '$apiEndpoint/import';
+    final headers = {'Content-Type': 'application/json'};
+    final response = await post(Uri.parse(url), headers: headers, body: jsonEncode(ImportProofRequest(id: req.id, url: ipfsResponse.body, memo: req.memo)));
+    return response.statusCode;
+  } 
+  return ipfsResponse.statusCode;
 }

@@ -1,6 +1,8 @@
 import 'package:bitcoin_nft_ui/features/off_chain/data/offchain_nft_api.dart';
 import 'package:bitcoin_nft_ui/features/off_chain/domain/import_proof_domain.dart';
 import 'package:bitcoin_nft_ui/ui/web_renderer.dart';
+import 'package:cross_file/cross_file.dart';
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,7 +16,7 @@ class SeeOffChainNftScreen extends StatefulWidget {
 const importProofText = 'Import proof from file';
 const seeOffChainNftText = 'See all off-chain NFTs';
 const idText = "id";
-const urlText = "url";
+const urlText = "filePath";
 const memoText = "memo";
 const importText = "Import";
 const refreshText = "Fetch off-chain NFTs";
@@ -23,14 +25,17 @@ const noNftText = "There are no NFTs here, please refresh to see your NFTs!";
 class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
   TextEditingController importedIdController =
       TextEditingController(text: const Uuid().v1());
-  String importedUrl = "";
+  XFile importedFilePath = XFile("");
   String importedMemo = "";
   Future<OffChainNftResponse> offChainFuture =
       ImportProofDomain.viewOffChainNfts();
 
   void onImportProof() async {
     final res = await ImportProofDomain.importProofDomain(
-        importedIdController.value.text, importedUrl, importedMemo);
+        importedIdController.value.text,
+        "",
+        importedMemo,
+        importedFilePath.path);
     if (res == 200) {
       var snackBar = const SnackBar(content: Text('Success'));
       // ignore: use_build_context_synchronously
@@ -73,14 +78,36 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: urlText,
+              DropTarget(
+                onDragDone: (urls) => {
+                  setState(() {
+                    importedFilePath = urls.files[0];
+                  })
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(16)),
+                  height: 150,
+                  child: const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.upload_file_rounded,
+                            size: 30, color: Colors.white),
+                        SizedBox(height: 10),
+                        Text("Drop file here below",
+                            style: TextStyle(fontSize: 20))
+                      ],
+                    ),
+                  ),
                 ),
-                onChanged: (value) => setState(() {
-                  importedUrl = value;
-                }),
               ),
+              const SizedBox(height: 10),
+              importedFilePath.path.isNotEmpty
+                  ? Text(importedFilePath.path,
+                      style: const TextStyle(fontWeight: FontWeight.bold))
+                  : const Text(""),
               const SizedBox(height: 20),
               TextFormField(
                 decoration: const InputDecoration(
