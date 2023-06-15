@@ -29,8 +29,12 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
   String importedMemo = "";
   Future<OffChainNftResponse> offChainFuture =
       ImportProofDomain.viewOffChainNfts();
+  bool isLoading = false;
 
   void onImportProof() async {
+    setState(() {
+      isLoading = true;
+    });
     final res = await ImportProofDomain.importProofDomain(
         importedIdController.value.text,
         "",
@@ -47,6 +51,7 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
     }
     setState(() {
       importedIdController.text = const Uuid().v1();
+      isLoading = false;
     });
   }
 
@@ -124,7 +129,7 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
                   minimumSize: const Size.fromHeight(60),
                 ),
                 onPressed: onImportProof,
-                child: const Text(importText),
+                child: isLoading ? const CircularProgressIndicator() : const Text(importText),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -173,7 +178,7 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Column(
           children: [
-            WebRendererWidget(url: res.url),
+            WebRendererWidget(url: res.url, binary: res.binary),
             const SizedBox(height: 10),
             Flexible(child: Text(res.id, textAlign: TextAlign.center)),
             const SizedBox(height: 10),

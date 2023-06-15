@@ -8,9 +8,10 @@ class OffChainNftStructure {
   final String id;
   final String url;
   final String memo;
-  const OffChainNftStructure({required this.id, required this.url, required this.memo});
+  final String binary;
+  const OffChainNftStructure({required this.id, required this.url, required this.memo, required this.binary});
   factory OffChainNftStructure.fromJson(Map<String, dynamic> json){
-    return OffChainNftStructure(id: json["id"], url: json["url"], memo: json["memo"]);
+    return OffChainNftStructure(id: json["id"], url: json["url"], memo: json["memo"], binary: json["binary"]);
   }
 }
 

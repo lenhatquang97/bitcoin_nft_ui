@@ -19,15 +19,30 @@ class ImportProofRequest{
   }
 }
 
+class IpfsUrlResponse {
+  final String url;
+  const IpfsUrlResponse({required this.url});
+
+  //Convert from and to json
+  factory IpfsUrlResponse.fromJson(String json) {
+    final Map<String, dynamic> map = jsonDecode(json);
+    return IpfsUrlResponse(
+      url: map['url'],
+    );
+  }
+
+}
+
 Future<int> importProof(ImportProofRequest req, String filePath) async{
   final ipfsUrl = '$apiEndpoint/ipfs-link?filePath=$filePath';
   final ipfsHeaders = {'Content-Type': 'application/json'};
   final ipfsResponse = await get(Uri.parse(ipfsUrl), headers: ipfsHeaders);
   if(ipfsResponse.statusCode == 200) {
-    log(ipfsResponse.body);
+    final ipfsUrl = IpfsUrlResponse.fromJson(ipfsResponse.body);
     const url = '$apiEndpoint/import';
     final headers = {'Content-Type': 'application/json'};
-    final response = await post(Uri.parse(url), headers: headers, body: jsonEncode(ImportProofRequest(id: req.id, url: ipfsResponse.body, memo: req.memo)));
+    final response = await post(Uri.parse(url), headers: headers, body: jsonEncode(ImportProofRequest(id: req.id, url: ipfsUrl.url, memo: req.memo)));
+    log("Import successfully");
     return response.statusCode;
   } 
   return ipfsResponse.statusCode;

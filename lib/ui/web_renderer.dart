@@ -1,13 +1,16 @@
+import 'package:convert/convert.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
 class WebRendererWidget extends StatelessWidget {
   final String url;
-  const WebRendererWidget({super.key, required this.url});
+  final String binary;
+  const WebRendererWidget({super.key, required this.url, required this.binary});
 
   Widget webRenderer(BuildContext context, String mimeType) {
     if (mimeType.startsWith("image")) {
-      return Expanded(child: Image.network(url));
+      return Expanded(child: Image.memory(Uint8List.fromList(hex.decode(binary))));
     } else {
       return unknownDisplay(context);
     }
