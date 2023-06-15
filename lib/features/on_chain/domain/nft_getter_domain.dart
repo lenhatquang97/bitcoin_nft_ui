@@ -1,9 +1,9 @@
 import 'package:bitcoin_nft_ui/features/on_chain/data/nft_getter.dart';
 
 class NftGetterDomain{
-  static Future<List<NftStructure>> nftGetterDomain(String address) async {
+  static Future<List<NftStructure>> nftGetterDomain() async {
     try {
-      final res = await getMultipleNftsBasedOnAddress(address);
+      final res = await getMultipleNfts();
       return res.data;
     } catch (e) {
       return List.empty();

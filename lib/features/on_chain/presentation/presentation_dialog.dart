@@ -10,7 +10,7 @@ void showSuccessfulDialogAboutCreatingInscription(
       child: const Text("OK"));
   AlertDialog alert = AlertDialog(
     title: const Text("Upload inscription successfully"),
-    content: Text(
+    content: SelectableText(
         "Your commit transaction id is ${res.commitTxId}\nYour reveal transaction id is ${res.revealTxId}"),
     actions: [okButton],
   );

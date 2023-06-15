@@ -5,7 +5,6 @@ import 'package:bitcoin_nft_ui/features/settings/data/ui_settings.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 const dropFileText = "Drop file here below";
@@ -14,7 +13,6 @@ const dropFileNote =
 const uploadInscriptionText = "Upload your inscription";
 const inscriptionNoteText =
     "Note that inscription can be viewed by anyone and they can be never changed or deleted";
-const satoshiValue = "Set satoshi value for this inscription";
 const satoshiNoteText =
     "Note that this satoshi value is used for next transaction if you want to transfer NFT to other people";
 const satoshiValueTextHint = "Satoshi value";
@@ -35,7 +33,6 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
   //Note: This list is one value
   final List<XFile> files = [];
   int feeValue = 0;
-  int satoshiVal = 0;
   int feeChoice = 0;
 
   /* 
@@ -46,16 +43,15 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
       final hexBinaryFile =
           await UploadInscriptionDomain.readBinaryFileDomain(files[0].path);
       final highFee = await UploadInscriptionDomain.estimateFeeDomain(
-          baseAddress, passphrase, 1, satoshiVal, [hexBinaryFile], false);
+          baseAddress, passphrase, [hexBinaryFile], false);
       setState(() {
         feeValue = highFee;
       });
     }
   }
 
-  void onSubmit(String addr, String pass) async {
-    final res = await UploadInscriptionDomain.uploadInscriptionDomain(addr, pass,
-        feeChoice + 1, satoshiVal, files[0].path);
+  void onSubmit(String pass) async {
+    final res = await UploadInscriptionDomain.uploadInscriptionDomain(pass, files[0].path);
     if (res.fee != -1) {
       // ignore: use_build_context_synchronously
       showSuccessfulDialogAboutCreatingInscription(res, context);
@@ -121,30 +117,6 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
             const SizedBox(
               height: 20,
             ),
-
-            //STEP 2
-            const Text(
-              satoshiValue,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            const Text(satoshiNoteText),
-
-            TextFormField(
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                hintText: satoshiValueTextHint,
-              ),
-              onChanged: (value) => setState(() {
-                if (value.isNotEmpty) {
-                  satoshiVal = int.parse(value);
-                }
-              }),
-            ),
-            const SizedBox(height: 20),
             //STEP 3
             const Text(
               transactionFeeText,
@@ -157,7 +129,7 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                FeeBlockWidget(feeValue: feeValue, satoshiReceive: satoshiVal),
+                FeeBlockWidget(feeValue: feeValue),
               ],
             ),
             const SizedBox(
@@ -169,7 +141,7 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                 minimumSize: const Size.fromHeight(60),
               ),
               onPressed: () {
-                onEstimateFee(value.yourAddress, value.passphrase);
+                onEstimateFee("default", value.passphrase);
               },
               child: const Text(estimateFeeText),
             ),
@@ -184,7 +156,7 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                 minimumSize: const Size.fromHeight(60),
               ),
               onPressed: (){
-                onSubmit(value.yourAddress, value.passphrase);
+                onSubmit(value.passphrase);
               },
               child: const Text(submitText),
             )

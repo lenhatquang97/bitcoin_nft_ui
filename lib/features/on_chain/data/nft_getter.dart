@@ -24,8 +24,8 @@ class NftResponse{
   }
 }
 
-Future<NftResponse> getMultipleNftsBasedOnAddress(String address) async {
-  final url = '$apiEndpoint/on-chain-nft?address=$address';
+Future<NftResponse> getMultipleNfts() async {
+  const url = '$apiEndpoint/on-chain-nft';
   final headers = {'Content-Type': 'application/json'};
   final response = await get(Uri.parse(url), headers: headers);
   //log("getMultipleNftsBasedOnAddress API returns ${response.statusCode} and ${response.body}");

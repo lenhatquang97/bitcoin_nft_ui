@@ -13,18 +13,17 @@ class SeeYourNftScreen extends StatefulWidget {
 }
 
 const seeYourNftText = "Your NFT Collection";
-const refreshText = "Fetch NFT";
+const refreshText = "Refresh";
 
 class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
-  final List<NftStructure> availableNfts = [];
-
-  void onRefresh(String baseAddress) async {
-    final value = await NftGetterDomain.nftGetterDomain(baseAddress);
+  void onRefresh() async {
     setState(() {
-      availableNfts.clear();
-      availableNfts.addAll(value);
+      nftGetterFuture = NftGetterDomain.nftGetterDomain();
     });
   }
+
+  Future<List<NftStructure>> nftGetterFuture =
+      NftGetterDomain.nftGetterDomain();
 
   @override
   Widget build(BuildContext context) {
@@ -48,26 +47,54 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                           ),
-                          onPressed: () {
-                            onRefresh(value.yourAddress);
-                          },
+                          onPressed: onRefresh,
                           child: const Text(refreshText),
                         )
                       ],
                     ),
                     const SizedBox(height: 20),
-                    availableNfts.isNotEmpty ? buildGrid() : const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 20),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Icon(Icons.close, size: 120),
-                        ),
-                        SizedBox(height: 20),
-                        Text("Sorry, there are no NFTs!", style: TextStyle(fontSize: 20),)
-                      ],
-                    ),
+                    FutureBuilder<List<NftStructure>>(
+                        future: nftGetterFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && snapshot.data != null) {
+                            if (snapshot.data != null &&
+                                snapshot.data!.isEmpty) {
+                              return const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(height: 20),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Icon(Icons.close, size: 120),
+                                  ),
+                                  SizedBox(height: 20),
+                                  Text(
+                                    "Sorry, There are no NFTs",
+                                    style: TextStyle(fontSize: 20),
+                                  )
+                                ],
+                              );
+                            }
+                            return buildGrid(snapshot.data!);
+                          } else if (snapshot.hasError) {
+                            return const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(height: 20),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Icon(Icons.close, size: 120),
+                                ),
+                                SizedBox(height: 20),
+                                Text(
+                                  "Sorry, May be you meet an error!",
+                                  style: TextStyle(fontSize: 20),
+                                )
+                              ],
+                            );
+                          }
+                          return const CircularProgressIndicator();
+                        })
                   ],
                 ),
               ),
@@ -75,13 +102,13 @@ class _SeeYourNftScreenState extends State<SeeYourNftScreen> {
   }
 
   //Generate widget that displays grid of NFTs but no line space
-  Widget buildGrid() => GridView(
+  Widget buildGrid(List<NftStructure> data) => GridView(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
         ),
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        children: availableNfts.map(buildFile).toList(),
+        children: data.map(buildFile).toList(),
       );
 
   Widget buildFile(NftStructure structure) => Padding(

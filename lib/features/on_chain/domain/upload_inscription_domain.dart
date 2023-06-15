@@ -4,16 +4,12 @@ import 'package:bitcoin_nft_ui/features/on_chain/data/upload_inscription.dart';
 import 'package:convert/convert.dart';
 
 class UploadInscriptionDomain {
-  static Future<int> estimateFeeDomain(
-    String address, String passphrase,
-      int numBlocks, int satoshiVal, List<String> data, bool isRef) async {
+  static Future<int> estimateFeeDomain(String address, String passphrase, List<String> data, bool isRef) async {
     final req = InscriptionRequest(
         address: address,
         passphrase: passphrase,
-        amount: satoshiVal,
         isRef: isRef,
         urls: data,
-        numBlocks: numBlocks,
         isSendNft: true
         );
     try {
@@ -31,14 +27,12 @@ class UploadInscriptionDomain {
     return hexStr;
   }
 
-  static Future<InscriptionResponse> uploadInscriptionDomain(String addr, String pass, int numBlocks, int satoshiVal, String filePath) async {
+  static Future<InscriptionResponse> uploadInscriptionDomain(String pass, String filePath) async {
     final req = InscriptionRequest(
-        address: addr,
+        address: "default",
         passphrase: pass,
         isRef: false,
         isSendNft: true,
-        numBlocks: 1,
-        amount: satoshiVal,
         urls: [filePath]
         );
     try {

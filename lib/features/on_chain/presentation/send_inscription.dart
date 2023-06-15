@@ -6,7 +6,6 @@ import 'package:bitcoin_nft_ui/features/on_chain/presentation/fee_block_info.dar
 import 'package:bitcoin_nft_ui/features/on_chain/presentation/presentation_dialog.dart';
 import 'package:bitcoin_nft_ui/features/settings/data/ui_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class SendInscriptionScreen extends StatefulWidget {
@@ -17,44 +16,40 @@ class SendInscriptionScreen extends StatefulWidget {
 }
 
 const chooseNftToSendText = "Step 1: Fetch NFT and choose NFT to send";
-const fetchNftText = "Fetch NFT";
+const fetchNftText = "Refresh";
 const receiptAddressText = "Step 2: Type receipt address to transfer NFT";
 const receiptAddressTextHint = "Receipt address";
-const typeSatoshiText = "Step 3: Type satoshi for keeping NFT";
-const satoshiNumberTextHint = "Must be number";
-const feeCalculationText = "Step 4: Estimate fee and modify satoshi";
+const feeCalculationText = "Step 3: Estimate fee";
 const calculateFeeText = "Calculate fee";
-const submitTransactionText = "Step 5: Submit transaction";
+const submitTransactionText = "Step 4: Submit transaction";
 const submitText = "Submit";
 
 class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
   String receiverAddress = "";
-  int nftChoice = -1;
+  NftStructure nftChoice =
+      const NftStructure(hexData: "", mimeType: "", txId: "", originTxId: "");
   int feeValue = 0;
-  int satoshiVal = 0;
-  List<NftStructure> availableNfts = [];
+
+  Future<List<NftStructure>> fetchNftFuture = NftGetterDomain.nftGetterDomain();
 
   /* 
     UI Logic function with onA, onB, onC
   */
-  void onFetchNft(String baseAddress) async {
-    final value = await NftGetterDomain.nftGetterDomain(baseAddress);
+  void onFetchNft() async {
     setState(() {
-      availableNfts = value;
+      fetchNftFuture = NftGetterDomain.nftGetterDomain();
     });
   }
 
   void onSubmit(String passphrase) async {
-    if (availableNfts.isNotEmpty) {
-      final refTxId = availableNfts[nftChoice].txId;
-      final originTxId = availableNfts[nftChoice].originTxId;
+    if (nftChoice.hexData.isNotEmpty && nftChoice.mimeType.isNotEmpty) {
       /*
         txIdRef = data.([]string)[0]
 				originTxId := data.([]string)[1]
 				dataSend = []byte(originTxId)
        */
       final result = await SendInscriptionDomain.sendInscriptionDomain(
-          receiverAddress, passphrase, satoshiVal, [refTxId, originTxId]);
+          receiverAddress, passphrase, [nftChoice.txId, nftChoice.originTxId]);
       if (result.fee != -1) {
         // ignore: use_build_context_synchronously
         showSuccessfulDialogAboutCreatingInscription(result, context);
@@ -66,10 +61,9 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
   }
 
   void onCalculateFee(String passphrase) async {
-    if (availableNfts.isNotEmpty) {
-      final originTxId = availableNfts[nftChoice].originTxId;
+    if (nftChoice.hexData.isNotEmpty && nftChoice.mimeType.isNotEmpty) {
       final result = await UploadInscriptionDomain.estimateFeeDomain(
-          receiverAddress, passphrase, 1, satoshiVal, [originTxId], true);
+          receiverAddress, passphrase, [nftChoice.originTxId], true);
       setState(() {
         feeValue = result;
       });
@@ -87,30 +81,39 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     //STEP 1
-                    const Text(
-                      chooseNftToSendText,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        minimumSize: const Size.fromHeight(60),
-                      ),
-                      onPressed: () {
-                        onFetchNft(value.yourAddress);
-                      },
-                      child: const Text(fetchNftText),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          chooseNftToSendText,
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                          ),
+                          onPressed: onFetchNft,
+                          child: const Text(fetchNftText),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
-                    listAvailableNFTs(nftChoice, (ind) {
-                      setState(() {
-                        nftChoice = ind;
-                      });
-                    }),
+                    FutureBuilder<List<NftStructure>>(
+                        future: fetchNftFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && snapshot.data != null) {
+                            return listAvailableNFTs(snapshot.data!, (struc) {
+                              setState(() {
+                                nftChoice = struc;
+                              });
+                            });
+                          }
+                          if (snapshot.hasError) {
+                            return const Text("No connection!");
+                          }
+                          return const CircularProgressIndicator();
+                        }),
                     const SizedBox(height: 20),
                     //STEP 2
                     const Text(
@@ -131,25 +134,6 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
                     ),
                     //STEP 3
                     const Text(
-                      typeSatoshiText,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    TextFormField(
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                        hintText: satoshiNumberTextHint,
-                      ),
-                      onChanged: (value) => setState(() {
-                        if (value.isNotEmpty) {
-                          satoshiVal = int.parse(value);
-                        }
-                      }),
-                    ),
-                    const SizedBox(height: 20),
-                    //STEP 4
-                    const Text(
                       feeCalculationText,
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -158,8 +142,7 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        FeeBlockWidget(
-                            feeValue: feeValue, satoshiReceive: satoshiVal),
+                        FeeBlockWidget(feeValue: feeValue),
                       ],
                     ),
                     const SizedBox(
@@ -199,25 +182,23 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
             ));
   }
 
-  Widget listAvailableNFTs(int nftChoice, Function(int) callback) =>
+  Widget listAvailableNFTs(
+          List<NftStructure> ls, Function(NftStructure) callback) =>
       SingleChildScrollView(
           child: Column(
-        children: availableNfts
-            .asMap()
-            .entries
-            .map((e) => buildFile(e.value, e.key, nftChoice, callback))
-            .toList(),
+        children: ls.map((e) => buildFile(e, callback)).toList(),
       ));
 
-  Widget buildFile(NftStructure nftStruc, int index, int currentIndex,
-          Function(int) callback) =>
+  Widget buildFile(NftStructure nftStruc, Function(NftStructure) callback) =>
       InkWell(
         onTap: () {
-          callback(index);
+          callback(nftStruc);
         },
         child: Container(
           decoration: BoxDecoration(
-              color: currentIndex == index ? Colors.blue : Colors.transparent,
+              color: nftChoice.txId == nftStruc.txId
+                  ? Colors.blue
+                  : Colors.transparent,
               borderRadius: BorderRadius.circular(8)),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),

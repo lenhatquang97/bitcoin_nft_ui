@@ -7,21 +7,17 @@ import 'package:http/http.dart';
 class InscriptionRequest {
   final String address;
   final String passphrase;
-  final int amount;
   final bool isRef;
-  final int numBlocks;
   final List<String> urls;
   final bool isSendNft;
-  const InscriptionRequest({required this.address, required this.passphrase, required this.amount, required this.isRef, required this.urls, required this.numBlocks, required this.isSendNft});
+  const InscriptionRequest({required this.address, required this.passphrase, required this.isRef, required this.urls, required this.isSendNft});
   //From json and to json converter
   factory InscriptionRequest.fromJson(Map<String, dynamic> json) {
     return InscriptionRequest(
       address: json['address'],
       passphrase: json['passphrase'],
-      amount: json['amount'],
       isRef: json['isRef'],
       urls: json['urls'],
-      numBlocks: json['numBlocks'],
       isSendNft: json['isSendNft']
     );
   }
@@ -30,10 +26,8 @@ class InscriptionRequest {
     return {
       'address': address,
       'passphrase': passphrase,
-      'amount': amount,
       'isRef': isRef,
       'urls': urls,
-      'numBlocks':numBlocks,
       'isSendNft': isSendNft
     };
   }

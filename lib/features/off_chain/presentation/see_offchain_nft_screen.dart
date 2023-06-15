@@ -25,7 +25,8 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
       TextEditingController(text: const Uuid().v1());
   String importedUrl = "";
   String importedMemo = "";
-  final List<OffChainNftStructure> availableNfts = [];
+  Future<OffChainNftResponse> offChainFuture =
+      ImportProofDomain.viewOffChainNfts();
 
   void onImportProof() async {
     final res = await ImportProofDomain.importProofDomain(
@@ -45,13 +46,9 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
   }
 
   void onRefresh() async {
-    final res = await ImportProofDomain.viewOffChainNfts();
-    if (res.data.isNotEmpty) {
-      setState(() {
-        availableNfts.clear();
-        availableNfts.addAll(res.data);
-      });
-    }
+    setState(() {
+      offChainFuture = ImportProofDomain.viewOffChainNfts();
+    });
   }
 
   @override
@@ -112,28 +109,38 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
                 child: const Text(refreshText),
               ),
               const SizedBox(height: 20),
-              const Text(
-                seeOffChainNftText,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              listAvailableNFTs(width)
+              FutureBuilder<OffChainNftResponse>(
+                future: offChainFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return listAvailableNFTs(width, snapshot.data!);
+                  } else if (snapshot.hasError) {
+                    return const Text(
+                      "Text error",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    );
+                  }
+                  return const CircularProgressIndicator();
+                },
+              )
             ]),
       ),
     );
   }
 
-  Widget listAvailableNFTs(double width) => SingleChildScrollView(
-      child: availableNfts.isNotEmpty
-          ? GridView.count(
-              crossAxisCount: width < 900 ? 2 : 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: availableNfts.map(buildFile).toList(),
-            )
-          : const Column(
-              children: [Text(noNftText)],
-            ));
+  Widget listAvailableNFTs(double width, OffChainNftResponse resp) =>
+      SingleChildScrollView(
+          child: resp.data.isNotEmpty
+              ? GridView.count(
+                  crossAxisCount: width < 900 ? 2 : 3,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: resp.data.map(buildFile).toList(),
+                )
+              : const Column(
+                  children: [Text(noNftText)],
+                ));
 
   Widget buildFile(OffChainNftStructure res) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
@@ -143,7 +150,11 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
             const SizedBox(height: 10),
             Flexible(child: Text(res.id, textAlign: TextAlign.center)),
             const SizedBox(height: 10),
-            Flexible(child: Text(res.memo, textAlign: TextAlign.center,))
+            Flexible(
+                child: Text(
+              res.memo,
+              textAlign: TextAlign.center,
+            ))
           ],
         ),
       );

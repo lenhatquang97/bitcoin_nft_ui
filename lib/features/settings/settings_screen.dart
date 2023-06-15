@@ -25,29 +25,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Expanded(
-                      flex: 1,
-                      child: Text(
-                        "Your base address",
-                        style:
-                            TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: TextFormField(
-                        initialValue: value.yourAddress,
-                        onChanged: (addr) => {
-                          value.yourAddress = addr
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Expanded(
                       flex: 2,
                       child: Text(
                         "Passphrase",
