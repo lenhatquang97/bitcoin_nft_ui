@@ -23,8 +23,7 @@ const refreshText = "Fetch off-chain NFTs";
 const noNftText = "There are no NFTs here, please refresh to see your NFTs!";
 
 class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
-  TextEditingController importedIdController =
-      TextEditingController(text: const Uuid().v1());
+  String importedId =  const Uuid().v1();
   XFile importedFilePath = XFile("");
   String importedMemo = "";
   Future<OffChainNftResponse> offChainFuture =
@@ -36,7 +35,7 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
       isLoading = true;
     });
     final res = await ImportProofDomain.importProofDomain(
-        importedIdController.value.text,
+        importedId,
         "",
         importedMemo,
         importedFilePath.path);
@@ -50,7 +49,7 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
     setState(() {
-      importedIdController.text = const Uuid().v1();
+      importedId = const Uuid().v1();
       isLoading = false;
     });
   }
@@ -74,13 +73,6 @@ class _SeeOffChainNftScreenState extends State<SeeOffChainNftScreen> {
               const Text(
                 importProofText,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: importedIdController,
-                decoration: const InputDecoration(
-                  hintText: idText,
-                ),
               ),
               const SizedBox(height: 20),
               DropTarget(
