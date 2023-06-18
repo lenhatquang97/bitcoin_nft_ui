@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 const dropFileText = "Drop file here below";
 const dropFileNote =
-    "File can be any type of images, musics, videos but less than 3MB";
+    "File can be any type of images, musics, videos but less than 2.5MB";
 const uploadInscriptionText = "Upload your inscription";
 const inscriptionNoteText =
     "Note that inscription can be viewed by anyone and they can be never changed or deleted";
@@ -54,7 +54,7 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
     final res = await UploadInscriptionDomain.uploadInscriptionDomain(pass, files[0].path);
     if (res.fee != -1) {
       // ignore: use_build_context_synchronously
-      showSuccessfulDialogAboutCreatingInscription(res, context);
+      showSuccessfulDialogAboutCreatingInscription("Upload inscription successfully", res, context);
     } else {
       // ignore: use_build_context_synchronously
       showFailedDialogAboutCreatingInscription(res, context);

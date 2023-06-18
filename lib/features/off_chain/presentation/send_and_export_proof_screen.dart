@@ -56,7 +56,7 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
           receiverAddress, passphrase, chosenNfts);
       if (result.fee != -1) {
         // ignore: use_build_context_synchronously
-        showSuccessfulDialogAboutCreatingInscription(result, context);
+        showSuccessfulDialogAboutCreatingInscription("Send off-chain sucessfully", result, context);
       } else {
         // ignore: use_build_context_synchronously
         showFailedDialogAboutCreatingInscription(result, context);

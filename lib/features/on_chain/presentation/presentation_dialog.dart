@@ -1,7 +1,7 @@
 import 'package:bitcoin_nft_ui/features/on_chain/data/upload_inscription.dart';
 import 'package:flutter/material.dart';
 
-void showSuccessfulDialogAboutCreatingInscription(
+void showSuccessfulDialogAboutCreatingInscription(String title, 
     InscriptionResponse res, BuildContext context) {
   Widget okButton = TextButton(
       onPressed: () {
@@ -9,7 +9,7 @@ void showSuccessfulDialogAboutCreatingInscription(
       },
       child: const Text("OK"));
   AlertDialog alert = AlertDialog(
-    title: const Text("Upload inscription successfully"),
+    title: Text(title),
     content: SelectableText(
         "Your commit transaction id is ${res.commitTxId}\nYour reveal transaction id is ${res.revealTxId}"),
     actions: [okButton],

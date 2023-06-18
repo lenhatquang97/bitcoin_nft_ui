@@ -52,7 +52,7 @@ class _SendInscriptionScreenState extends State<SendInscriptionScreen> {
           receiverAddress, passphrase, [nftChoice.txId, nftChoice.originTxId]);
       if (result.fee != -1) {
         // ignore: use_build_context_synchronously
-        showSuccessfulDialogAboutCreatingInscription(result, context);
+        showSuccessfulDialogAboutCreatingInscription("Send inscription successfully", result, context);
       } else {
         // ignore: use_build_context_synchronously
         showFailedDialogAboutCreatingInscription(result, context);

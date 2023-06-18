@@ -59,7 +59,9 @@ class FileRendererWidget extends StatelessWidget {
 
   Widget fileRenderer(BuildContext context) {
     if (mimeType.startsWith("image")) {
-      return Image.memory(Uint8List.fromList(hex.decode(hexStr)));
+      return Expanded(child: Align(
+        alignment: Alignment.center,
+        child: Image.memory(Uint8List.fromList(hex.decode(hexStr)))));
     } else if (mimeType.startsWith("text/plain")) {
       return textRenderer();
     } else {
