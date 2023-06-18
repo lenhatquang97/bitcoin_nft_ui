@@ -1,5 +1,5 @@
 import 'package:bitcoin_nft_ui/features/off_chain/data/export_proof_api.dart';
-import 'package:bitcoin_nft_ui/features/off_chain/data/offchain_nft_api.dart';
+import 'package:bitcoin_nft_ui/features/off_chain/data/view_offchain_nft_api.dart';
 import 'package:bitcoin_nft_ui/features/off_chain/domain/import_proof_domain.dart';
 import 'package:bitcoin_nft_ui/features/off_chain/domain/send_proof_domain.dart';
 import 'package:bitcoin_nft_ui/features/on_chain/domain/upload_inscription_domain.dart';
@@ -18,7 +18,7 @@ class SendAndExportProofScreen extends StatefulWidget {
 }
 
 const sendAndExportProofText = 'Send and export proof';
-const chooseNftToSendText = "Step 1: Choose multiple NFTs to send";
+const chooseNftToSendText = "Step 1: Choose single NFT to send";
 const receiptAddressText = "Step 2: Input receipt address";
 const receiptAddressTextHint = "Receipt address";
 const urlToExportText = "URL to export";
@@ -40,20 +40,18 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
 
   Future<OffChainNftResponse> offChainFuture =
       ImportProofDomain.viewOffChainNfts();
-  final List<OffChainNftStructure> multipleChoices = [];
+  OffChainNftStructure singleChoice = const OffChainNftStructure(id: "", url: "", memo: "",txId: "", binary: "");
 
   void onFetchOffChainNfts() async {
     setState(() {
       offChainFuture = ImportProofDomain.viewOffChainNfts();
-      multipleChoices.clear();
     });
   }
 
   void onSubmit(String passphrase) async {
-    if (multipleChoices.isNotEmpty) {
-      final chosenNfts = multipleChoices.map((e) => e.url).toList();
+    if (singleChoice.id.isNotEmpty) {
       final result = await SendProofDomain.sendDomain(
-          receiverAddress, passphrase, chosenNfts);
+          receiverAddress, passphrase, [singleChoice.url], singleChoice.txId);
       if (result.fee != -1) {
         // ignore: use_build_context_synchronously
         showSuccessfulDialogAboutCreatingInscription("Send off-chain sucessfully", result, context);
@@ -65,10 +63,9 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
   }
 
   void onCalculateFee(String passphrase) async {
-    if (multipleChoices.isNotEmpty) {
-      final chosenNfts = multipleChoices.map((e) => e.url).toList();
+    if (singleChoice.id.isNotEmpty) {
       final result = await UploadInscriptionDomain.estimateFeeDomain(
-          receiverAddress, passphrase, chosenNfts, false);
+          receiverAddress, passphrase, [singleChoice.url], false);
       setState(() {
         feeValue = result;
       });
@@ -247,22 +244,14 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
   Widget buildFile(OffChainNftStructure nftStruc, int index) => InkWell(
         onTap: () {
           setState(() {
-            bool hasUrl =
-                multipleChoices.any((element) => element.url == nftStruc.url);
-            if (hasUrl) {
-              multipleChoices
-                  .removeWhere((element) => element.url == nftStruc.url);
-            } else {
-              multipleChoices.add(nftStruc);
-            }
+            singleChoice = nftStruc;
           });
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Container(
             decoration: BoxDecoration(
-              color: (multipleChoices
-                      .any((element) => element.url == nftStruc.url))
+              color: (singleChoice.id == nftStruc.id)
                   ? Colors.blue
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(10),
@@ -270,7 +259,15 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
             child: Row(
               children: [
                 const Icon(Icons.text_snippet, size: 40, color: Colors.red),
-                Text(nftStruc.id)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(nftStruc.id),
+                    Text(nftStruc.url),
+                    Text(nftStruc.memo, textAlign: TextAlign.left)
+                  ],
+                )
+
               ],
             ),
           ),

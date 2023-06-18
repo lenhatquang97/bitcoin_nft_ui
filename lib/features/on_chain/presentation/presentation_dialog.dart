@@ -2,7 +2,7 @@ import 'package:bitcoin_nft_ui/features/on_chain/data/upload_inscription.dart';
 import 'package:flutter/material.dart';
 
 void showSuccessfulDialogAboutCreatingInscription(String title, 
-    InscriptionResponse res, BuildContext context) {
+    SendResponse res, BuildContext context) {
   Widget okButton = TextButton(
       onPressed: () {
         Navigator.of(context).pop();
@@ -19,7 +19,7 @@ void showSuccessfulDialogAboutCreatingInscription(String title,
 }
 
 void showFailedDialogAboutCreatingInscription(
-    InscriptionResponse res, BuildContext context) {
+    SendResponse res, BuildContext context) {
   Widget okButton = TextButton(
       onPressed: () {
         Navigator.of(context).pop();

@@ -10,7 +10,9 @@ class UploadInscriptionDomain {
         passphrase: passphrase,
         isRef: isRef,
         urls: data,
-        isSendNft: true
+        isSendNft: true,
+        isMint: true,
+        txId: ""
         );
     try {
       final res = await estimateFee(req);
@@ -27,19 +29,21 @@ class UploadInscriptionDomain {
     return hexStr;
   }
 
-  static Future<InscriptionResponse> uploadInscriptionDomain(String pass, String filePath) async {
+  static Future<SendResponse> uploadInscriptionDomain(String pass, String filePath) async {
     final req = InscriptionRequest(
         address: "default",
         passphrase: pass,
         isRef: false,
         isSendNft: true,
-        urls: [filePath]
+        urls: [filePath],
+        isMint: true,
+        txId: ""
         );
     try {
       final res = await uploadInscription(req);
       return res;
     } catch (e) {
-      return const InscriptionResponse(revealTxId: "",commitTxId: "", fee: -1);
+      return const SendResponse(revealTxId: "",commitTxId: "", fee: -1);
     }
   }
 }

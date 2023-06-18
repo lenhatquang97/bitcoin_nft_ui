@@ -8,10 +8,11 @@ class OffChainNftStructure {
   final String id;
   final String url;
   final String memo;
+  final String txId;
   final String binary;
-  const OffChainNftStructure({required this.id, required this.url, required this.memo, required this.binary});
+  const OffChainNftStructure({required this.id, required this.url, required this.memo, required this.txId, required this.binary});
   factory OffChainNftStructure.fromJson(Map<String, dynamic> json){
-    return OffChainNftStructure(id: json["id"], url: json["url"], memo: json["memo"], binary: json["binary"]);
+    return OffChainNftStructure(id: json["id"], url: json["url"], memo: json["memo"], txId: json["txId"], binary: json["binary"]);
   }
 }
 
@@ -29,7 +30,7 @@ Future<OffChainNftResponse> getOffChainNfts() async {
   const url = '$apiEndpoint/view-data';
   final headers = {'Content-Type': 'application/json'};
   final response = await get(Uri.parse(url), headers: headers);
-  log("getMultipleNftsBasedOnAddress API returns ${response.statusCode} and ${response.body}");
+  log(response.body);
   if (response.statusCode == 200) {
     return OffChainNftResponse.fromJson(response.body);
   } else {

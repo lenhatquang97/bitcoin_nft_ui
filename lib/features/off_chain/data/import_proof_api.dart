@@ -33,17 +33,10 @@ class IpfsUrlResponse {
 
 }
 
-Future<int> importProof(ImportProofRequest req, String filePath) async{
-  final ipfsUrl = '$apiEndpoint/ipfs-link?filePath=$filePath';
-  final ipfsHeaders = {'Content-Type': 'application/json'};
-  final ipfsResponse = await get(Uri.parse(ipfsUrl), headers: ipfsHeaders);
-  if(ipfsResponse.statusCode == 200) {
-    final ipfsUrl = IpfsUrlResponse.fromJson(ipfsResponse.body);
-    const url = '$apiEndpoint/import';
-    final headers = {'Content-Type': 'application/json'};
-    final response = await post(Uri.parse(url), headers: headers, body: jsonEncode(ImportProofRequest(id: req.id, url: ipfsUrl.url, memo: req.memo)));
-    log("Import successfully");
-    return response.statusCode;
-  } 
-  return ipfsResponse.statusCode;
+Future<int> importProof(ImportProofRequest req) async{
+  const url = '$apiEndpoint/import';
+  final headers = {'Content-Type': 'application/json'};
+  final response = await post(Uri.parse(url), headers: headers, body: jsonEncode(ImportProofRequest(id: req.id, url: req.url, memo: req.memo)));
+  log("Import successfully");
+  return response.statusCode;
 }

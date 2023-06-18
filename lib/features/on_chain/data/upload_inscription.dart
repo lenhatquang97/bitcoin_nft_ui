@@ -10,7 +10,9 @@ class InscriptionRequest {
   final bool isRef;
   final List<String> urls;
   final bool isSendNft;
-  const InscriptionRequest({required this.address, required this.passphrase, required this.isRef, required this.urls, required this.isSendNft});
+  final bool isMint;
+  final String txId;
+  const InscriptionRequest({required this.address, required this.passphrase, required this.isRef, required this.urls, required this.isSendNft, required this.isMint, required this.txId});
   //From json and to json converter
   factory InscriptionRequest.fromJson(Map<String, dynamic> json) {
     return InscriptionRequest(
@@ -18,7 +20,9 @@ class InscriptionRequest {
       passphrase: json['passphrase'],
       isRef: json['isRef'],
       urls: json['urls'],
-      isSendNft: json['isSendNft']
+      isSendNft: json['isSendNft'],
+      isMint: json['isMint'],
+      txId: json["txId"]
     );
   }
   
@@ -28,22 +32,23 @@ class InscriptionRequest {
       'passphrase': passphrase,
       'isRef': isRef,
       'urls': urls,
-      'isSendNft': isSendNft
+      'isSendNft': isSendNft,
+      'isMint': isMint,
+      'txId': txId
     };
   }
-
 }
 
-class InscriptionResponse {
+class SendResponse {
   final String revealTxId;
   final String commitTxId;
   final int fee;
-  const InscriptionResponse({required this.revealTxId, required this.commitTxId, required this.fee});
+  const SendResponse({required this.revealTxId, required this.commitTxId, required this.fee});
 
   //Convert from and to json
-  factory InscriptionResponse.fromJson(String json) {
+  factory SendResponse.fromJson(String json) {
     final Map<String, dynamic> map = jsonDecode(json);
-    return InscriptionResponse(
+    return SendResponse(
       revealTxId: map["data"]['revealTxId'],
       commitTxId: map["data"]['commitTxId'],
       fee: map["data"]['fee']
@@ -59,13 +64,13 @@ class InscriptionResponse {
   }
 }
 
-Future<InscriptionResponse> uploadInscription(InscriptionRequest req) async{
+Future<SendResponse> uploadInscription(InscriptionRequest req) async{
   const url = '$apiEndpoint/send';
   final headers = {'Content-Type': 'application/json'};
   final response = await post(Uri.parse(url), headers: headers, body: jsonEncode(req));
   log("uploadInscription API returns ${response.statusCode} and ${response.body}");
   if (response.statusCode == 200) {
-    return InscriptionResponse.fromJson(response.body);
+    return SendResponse.fromJson(response.body);
   } else {
     throw Exception('Failed to upload inscription');
   }
