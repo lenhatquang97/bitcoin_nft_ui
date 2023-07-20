@@ -80,11 +80,15 @@ class _ViewOffChainNftScreenState extends State<ViewOffChainNftScreen> {
         child: Column(
           children: [
             WebRendererWidget(url: res.url, binary: res.binary),
-            Flexible(
-                child: Text(
+            Text(
               res.txId,
               textAlign: TextAlign.center,
-            )),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              res.memo,
+              textAlign: TextAlign.center,
+            )
 
           ],
         ),

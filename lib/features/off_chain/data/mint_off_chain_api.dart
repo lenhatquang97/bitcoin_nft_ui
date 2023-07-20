@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:bitcoin_nft_ui/api/api_constants.dart';
 import 'package:bitcoin_nft_ui/features/off_chain/data/import_proof_api.dart';
-import 'package:bitcoin_nft_ui/features/on_chain/data/upload_inscription.dart';
 import 'package:http/http.dart';
 
 class OCDataRequest {
@@ -45,32 +42,14 @@ class MintRequest {
   }
 }
 
-Future<(OCDataRequest, SendResponse)> mintOffChainNft(
+Future<String> getIpfsLink(
     String id, String memo, String filePath) async {
   final ipfsUrl = '$apiEndpoint/ipfs-link?filePath=$filePath';
   final ipfsHeaders = {'Content-Type': 'application/json'};
   final ipfsResponse = await get(Uri.parse(ipfsUrl), headers: ipfsHeaders);
   if (ipfsResponse.statusCode == 200) {
     final ipfsUrl = IpfsUrlResponse.fromJson(ipfsResponse.body);
-    const url = '$apiEndpoint/send';
-    final headers = {'Content-Type': 'application/json'};
-
-    final ocReq = OCDataRequest(id: id, url: ipfsUrl.url, memo: memo);
-    final req = MintRequest(
-        address: "default", passphrase: "12345", isSendNft: true, data: ocReq);
-
-    final response =
-        await post(Uri.parse(url), headers: headers, body: jsonEncode(req));
-
-    return response.statusCode == 200
-        ? (ocReq, SendResponse.fromJson(response.body))
-        : (
-            const OCDataRequest(id: "", url: "", memo: ""),
-            const SendResponse(revealTxId: "", commitTxId: "", fee: -1)
-          );
+    return ipfsUrl.url;
   }
-  return (
-    const OCDataRequest(id: "", url: "", memo: ""),
-    const SendResponse(revealTxId: "", commitTxId: "", fee: -1)
-  );
+  return "";
 }

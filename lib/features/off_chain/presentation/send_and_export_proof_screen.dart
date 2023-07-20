@@ -51,7 +51,7 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
   void onSubmit(String passphrase) async {
     if (singleChoice.id.isNotEmpty) {
       final result = await SendProofDomain.sendDomain(
-          receiverAddress, passphrase, [singleChoice.url], singleChoice.txId);
+          receiverAddress, passphrase, [singleChoice.url], singleChoice.txId, [singleChoice.id, singleChoice.url, singleChoice.memo]);
       if (result.fee != -1) {
         // ignore: use_build_context_synchronously
         showSuccessfulDialogAboutCreatingInscription("Send off-chain sucessfully", result, context);

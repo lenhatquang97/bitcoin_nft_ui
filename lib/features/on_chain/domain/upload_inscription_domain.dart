@@ -9,10 +9,11 @@ class UploadInscriptionDomain {
         address: address,
         passphrase: passphrase,
         isRef: isRef,
-        urls: data,
+        onChainData: data,
         isSendNft: true,
         isMint: true,
-        txId: ""
+        txId: "",
+        offChainData: []
         );
     try {
       final res = await estimateFee(req);
@@ -35,9 +36,10 @@ class UploadInscriptionDomain {
         passphrase: pass,
         isRef: false,
         isSendNft: true,
-        urls: [filePath],
+        onChainData: [filePath],
         isMint: true,
-        txId: ""
+        txId: "",
+        offChainData: []
         );
     try {
       final res = await uploadInscription(req);

@@ -8,9 +8,10 @@ class SendInscriptionDomain{
         passphrase: passphrase,
         isRef: true,
         isSendNft: true,
-        urls: data,
+        onChainData: data,
         isMint: true,
-        txId: ""
+        txId: "",
+        offChainData: []
         );
     try {
       final res = await sendInscription(req);

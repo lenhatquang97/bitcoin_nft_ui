@@ -10,7 +10,10 @@ class WebRendererWidget extends StatelessWidget {
 
   Widget webRenderer(BuildContext context, String mimeType) {
     if (mimeType.startsWith("image")) {
-      return Flexible(child: Image.memory(Uint8List.fromList(hex.decode(binary))));
+      return Expanded(
+        child: Image.memory(Uint8List.fromList(hex.decode(binary)),
+        ),
+      );
     } else {
       return unknownDisplay(context);
     }

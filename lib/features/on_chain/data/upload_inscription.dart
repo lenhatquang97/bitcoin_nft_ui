@@ -8,21 +8,23 @@ class InscriptionRequest {
   final String address;
   final String passphrase;
   final bool isRef;
-  final List<String> urls;
+  final List<String> onChainData;
   final bool isSendNft;
   final bool isMint;
   final String txId;
-  const InscriptionRequest({required this.address, required this.passphrase, required this.isRef, required this.urls, required this.isSendNft, required this.isMint, required this.txId});
+  final List<String> offChainData;
+  const InscriptionRequest({required this.address, required this.passphrase, required this.isRef, required this.onChainData, required this.isSendNft, required this.isMint, required this.txId, required this.offChainData});
   //From json and to json converter
   factory InscriptionRequest.fromJson(Map<String, dynamic> json) {
     return InscriptionRequest(
       address: json['address'],
       passphrase: json['passphrase'],
       isRef: json['isRef'],
-      urls: json['urls'],
+      onChainData: json['urls'],
       isSendNft: json['isSendNft'],
       isMint: json['isMint'],
-      txId: json["txId"]
+      txId: json["txId"],
+      offChainData: json["offChainData"]
     );
   }
   
@@ -31,10 +33,11 @@ class InscriptionRequest {
       'address': address,
       'passphrase': passphrase,
       'isRef': isRef,
-      'urls': urls,
+      'urls': onChainData,
       'isSendNft': isSendNft,
       'isMint': isMint,
-      'txId': txId
+      'txId': txId,
+      'offChainData': offChainData
     };
   }
 }
