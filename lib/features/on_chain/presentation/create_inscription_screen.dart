@@ -105,6 +105,13 @@ class _CreateInscriptionScreenState extends State<CreateInscriptionScreen> {
                       ),
                       //STEP 0
                       const SizedBox(height: 20),
+                      SelectableText(
+                            "Account address: ${snapshot.hasData ? snapshot.data?.account : "Loading"}",
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 20),
+
                       //STEP 1
                       const Text(
                         uploadInscriptionText,

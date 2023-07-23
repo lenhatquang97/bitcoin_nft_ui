@@ -1,8 +1,6 @@
 [Desktop Entry]
-Name=Flutter Linux App
-Comment=Flutter Linux launcher icon
+Icon=${SNAP}/meta/gui/app_icon.png
 Exec=app_icon
-Icon=app_icon.png
-Terminal=false
 Type=Application
-Categories=Entertainment;
+Name=BitcoinNftUi
+Terminal=false

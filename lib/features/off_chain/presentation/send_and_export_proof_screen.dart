@@ -127,6 +127,12 @@ class _SendAndExportProofScreenState extends State<SendAndExportProofScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
+                      SelectableText(
+                            "Account address: ${snapshot.hasData ? snapshot.data?.account : "Loading"}",
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

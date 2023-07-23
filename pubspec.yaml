@@ -50,15 +50,6 @@ dependencies:
       url: https://github.com/google/flutter-desktop-embedding
       path: plugins/window_size
 
-icons_launcher:
-  image_path: "assets/icons/token.png"
-  platforms:
-    macos:
-      enable: true
-    linux:
-      enable: true
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -69,8 +60,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  icons_launcher: ^2.1.1
+  flutter_launcher_icons: ^0.13.1
 
+flutter_launcher_icons:
+  image_path: "assets/icons/token.png"
+  macos:
+    generate: true
+    image_path: "assets/icons/token.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

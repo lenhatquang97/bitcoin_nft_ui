@@ -5,18 +5,21 @@ import 'package:http/http.dart';
 
 class CheckBalanceResponse{
   final int balance;
-  const CheckBalanceResponse({required this.balance});
+  final String account;
+  const CheckBalanceResponse({required this.balance, required this.account});
   //Convert from and to json
   factory CheckBalanceResponse.fromJson(String json) {
     final Map<String, dynamic> map = jsonDecode(json);
     return CheckBalanceResponse(
-      balance: map["data"],
+      balance: map["data"]["balance"],
+      account: map["data"]["account"]
     );
   }
 
   String toJson() {
     return jsonEncode({
-      'data': balance
+      'data': balance,
+      'account': account
     });
   }
 }
