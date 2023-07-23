@@ -9,7 +9,7 @@ class SendProofDomain{
         address: address,
         passphrase: passphrase,
         isSendNft: true,
-        isRef: true,
+        isRef: false,
         onChainData: urls,
         isMint: false,
         txId: specialTxId,
